@@ -8,10 +8,3 @@ type Particle struct {
 
 	Fixed    bool
 }
-
-func (p *Particle) Reset() {
-	p.Position = Vec3{}
-	p.Velocity = Vec3{}
-	p.Force = Vec3{}
-	p.Mass = 1.0
-}
