@@ -5,13 +5,11 @@ type Particle struct {
 	Velocity Vec3
 	Force    Vec3
 	Mass     float64
-	Age      float64
 	Fixed    bool
 }
 
 func (p *Particle) Reset() {
 	p.Mass = 1.0
-	p.Age = 0.0
 	p.Fixed = false
 	p.Position = Vec3{}
 	p.Velocity = Vec3{}
