@@ -73,7 +73,7 @@ func (ps *ParticleSystem) ClearForces() {
 func (ps *ParticleSystem) ApplyForces() {
 	if ps.Gravity.Length() > 0.0 {
 		for _, particle := range ps.Particles {
-			particle.Force.AddAssign(ps.Gravity)
+			particle.Force.AddAssign(ps.Gravity.Scale(particle.Mass))
 		}
 	}
 
