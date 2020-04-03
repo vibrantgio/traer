@@ -1,14 +1,14 @@
 package traer
 
-func MakeModifiedEulerIntegrator(ps *ParticleSystem) Integrator {
-	return &modifiedEulerIntegrator{ps: ps}
+func MakeVelocityVerletIntegrator(ps *ParticleSystem) Integrator {
+	return &velocityVerletIntegrator{ps: ps}
 }
 
-type modifiedEulerIntegrator struct {
+type velocityVerletIntegrator struct {
 	ps *ParticleSystem
 }
 
-func (i *modifiedEulerIntegrator) Step(t float64) {
+func (i *velocityVerletIntegrator) Step(t float64) {
 	i.ps.ClearForces()
 	i.ps.ApplyForces()
 

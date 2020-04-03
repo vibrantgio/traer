@@ -19,7 +19,7 @@ type ParticleSystem struct {
 
 func MakeParticleSystem(g, drag float64) *ParticleSystem {
 	ps := &ParticleSystem{Gravity: Vec3{0, g, 0}, Drag: drag}
-	ps.Integrator = MakeModifiedEulerIntegrator(ps)
+	ps.Integrator = MakeVelocityVerletIntegrator(ps)
 	return ps
 }
 
