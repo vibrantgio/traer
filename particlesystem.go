@@ -55,10 +55,13 @@ func (ps *ParticleSystem) MakeSpring(pa, pb *Particle, ks, d, r float64) *Spring
 	return spring
 }
 
-// Tick advances the simulation by some time t, or by the default 1.0. You probably want to keep
-// this the same at all times unless you want speed up or slow things down.
-func (ps *ParticleSystem) Tick() {
-	ps.Integrator.Step(1)
+// Tick advances the simulation by a 1/t seconds (t is the argument to Tick).
+// By default use a t of 1.0 indicating a simulation duration of a second for
+// that Tick call. Increase t to a higher value in order to make the simulation
+// run SLOWER, as a higher t will lead to a lower 1/t value forcing the
+// simulation to run smaller time increments for every call to Tick.
+func (ps *ParticleSystem) Tick(t float64) {
+	ps.Integrator.Step(t)
 }
 
 func (ps *ParticleSystem) ClearForces() {
