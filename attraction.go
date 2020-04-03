@@ -25,14 +25,6 @@ func (a *Attraction) TurnOff() {
 	a.On = false
 }
 
-func (a *Attraction) IsOn() bool {
-	return a.On
-}
-
-func (a *Attraction) IsOff() bool {
-	return !a.On
-}
-
 func (a *Attraction) Apply() {
 	if !a.On || (a.A.Fixed && a.B.Fixed) {
 		return

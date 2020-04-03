@@ -21,14 +21,6 @@ func (s *Spring) TurnOff() {
 	s.On = false
 }
 
-func (s *Spring) IsOn() bool {
-	return s.On
-}
-
-func (s *Spring) IsOff() bool {
-	return !s.On
-}
-
 func (s *Spring) Apply() {
 	if !s.On || (s.A.Fixed && s.B.Fixed) {
 		return
