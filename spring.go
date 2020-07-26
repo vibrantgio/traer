@@ -1,51 +1,35 @@
+// SPDX-License-Identifier: Unlicense OR MIT
+
 package traer
 
+// Spring connects 2 particles A,B and tries to keep them a certain distance apart.
+//
+// A spring has 3 properties Strength, Damping and RestLength that determine its
+// behavior.
 type Spring struct {
-	A              *Particle
-	B              *Particle
-	SpringConstant float64
-	Damping        float64
-	RestLength     float64
-	On             bool
+	A *Particle
+	B *Particle
+
+	// Strength, when high makes a spring strong and act like a stick. When
+	// set low, will make a spring weak, causing it to take a long time to
+	// return to its rest length (see below).
+	Strength float64
+	// Damping, when set high will prevent the spring from overshooting and
+	// cause it to settle down quickly. When set low, a spring oscillates.
+	Damping float64
+	// Rest Length is the length the spring wants to be at. It acts on the
+	// particles to push or pull them exactly this far apart at all times.
+	RestLength float64
+
+	On bool
 }
 
-func MakeSpring(a, b *Particle, ks, d, r float64) *Spring {
-	return &Spring{a, b, ks, d, r, true}
-}
-
+// TurnOn is shorthand for setting the On field of the spring to true.
 func (s *Spring) TurnOn() {
 	s.On = true
 }
 
+// TurnOff is shorthand for setting the On field of the spring to false.
 func (s *Spring) TurnOff() {
 	s.On = false
-}
-
-func (s *Spring) Apply() {
-	if !s.On || (s.A.Fixed && s.B.Fixed) {
-		return
-	}
-
-	a2b := s.A.Position.Subtract(s.B.Position)
-	a2bDistance := a2b.Length()
-	if a2bDistance > 0.0 {
-		a2b.ScaleAssign(1 / a2bDistance) // normalize a2b
-	}
-
-	// spring force is proportional to how much it stretched
-	springForce := -(a2bDistance - s.RestLength) * s.SpringConstant
-
-	// want velocity along line b/w a & b, damping force is proportional to this
-	va2b := s.A.Velocity.Subtract(s.B.Velocity)
-	dampingForce := -s.Damping * a2b.Dot(va2b)
-
-	// forceB is same as forceA in opposite direction
-	a2b.ScaleAssign(springForce + dampingForce)
-
-	if !s.A.Fixed {
-		s.A.Force.AddAssign(a2b)
-	}
-	if !s.B.Fixed {
-		s.B.Force.SubtractAssign(a2b)
-	}
 }

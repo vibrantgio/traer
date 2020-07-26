@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Unlicense OR MIT
+
 package traer
 
 type Particle struct {
@@ -6,5 +8,5 @@ type Particle struct {
 	Force    Vec3
 	Mass     float64
 
-	Fixed    bool
+	Fixed bool
 }

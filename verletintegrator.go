@@ -1,51 +1,65 @@
+// SPDX-License-Identifier: Unlicense OR MIT
+
 package traer
 
-func MakeDefaultVerletIntegrator(ps *ParticleSystem) Integrator {
-	return &defaultVerletIntegrator{ps: ps}
-}
+import "math"
 
-type defaultVerletIntegrator struct {
-	ps *ParticleSystem
-}
+// MakeDefaultVerletIntegrator creates an integrator that performs the
+// following calculation for every particle p that is no fixed.
+//
+//	a := p.Force.Scale(1.0 / p.Mass)
+//	position := p.Position.Add(p.Velocity.Scale(1.0 / t)).Add(a.Scale(1.0 / (t * t))
+//	p.Velocity = position.Subtract(p.Position).Scale(t)
+//	p.Position = position
+func MakeDefaultVerletIntegrator(ps *ParticleSystem) IntegrationStep {
+	step := func(t float64) float64 {
+		ps.ClearForces()
+		ps.ApplyForces()
 
-func (i *defaultVerletIntegrator) Step(t float64) {
-	i.ps.ClearForces()
-	i.ps.ApplyForces()
+		dt := 1.0 / t
+		dtdt := dt * dt
 
-	dt := 1 / t
-	dtdt := dt * dt
-
-	for _, p := range i.ps.Particles {
-		if !p.Fixed {
-			a := p.Force.Scale(1.0 / p.Mass)
-			position := p.Position.Add(p.Velocity.Scale(dt)).Add(a.Scale(dtdt))
-			p.Velocity = position.Subtract(p.Position).Scale(t)
-			p.Position = position
+		activity := 0.0
+		for _, p := range ps.Particles {
+			if !p.Fixed {
+				a := p.Force.Scale(1.0 / p.Mass)
+				position := p.Position.Add(p.Velocity.Scale(dt)).Add(a.Scale(dtdt))
+				p.Velocity = position.Subtract(p.Position).Scale(t)
+				p.Position = position
+				activity += p.Velocity.LengthSquared()
+			}
 		}
+		return math.Sqrt(activity)
 	}
+	return step
 }
 
-func MakeVelocityVerletIntegrator(ps *ParticleSystem) Integrator {
-	return &velocityVerletIntegrator{ps: ps}
-}
+// MakeVelocityVerletIntegrator creates an integrator that performs the
+// following calculation for every particle p that is no fixed.
+//
+//	a := p.Force.Scale(1.0 / p.Mass)
+//	p.Position.AddAssign(p.Velocity.Scale(1.0 / t))
+//	p.Position.AddAssign(a.Scale(1.0 / (2.0*t*t)))
+//	p.Velocity.AddAssign(a.Scale(1.0 / t))
+func MakeVelocityVerletIntegrator(ps *ParticleSystem) IntegrationStep {
+	step := func (t float64) float64 {
+		ps.ClearForces()
+		ps.ApplyForces()
 
-type velocityVerletIntegrator struct {
-	ps *ParticleSystem
-}
+		dt := 1.0 / t
+		halfdtdt := 0.5 * dt * dt
 
-func (i *velocityVerletIntegrator) Step(t float64) {
-	i.ps.ClearForces()
-	i.ps.ApplyForces()
-
-	dt := 1 / t
-	halfdtdt := 0.5 * dt * dt
-
-	for _, p := range i.ps.Particles {
-		if !p.Fixed {
-			a := p.Force.Scale(1.0 / p.Mass)
-			p.Position.AddAssign(p.Velocity.Scale(dt))
-			p.Position.AddAssign(a.Scale(halfdtdt))
-			p.Velocity.AddAssign(a.Scale(dt))
+		activity := 0.0
+		for _, p := range ps.Particles {
+			if !p.Fixed {
+				a := p.Force.Scale(1.0 / p.Mass)
+				p.Position.AddAssign(p.Velocity.Scale(dt))
+				p.Position.AddAssign(a.Scale(halfdtdt))
+				p.Velocity.AddAssign(a.Scale(dt))
+				activity += p.Velocity.LengthSquared()
+			}
 		}
+		return math.Sqrt(activity)
 	}
+	return step
 }
