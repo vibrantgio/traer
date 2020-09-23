@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	eliasnaur.com/font v0.0.0-20200617114307-e02d32decb4b // indirect
-	gioui.org v0.0.0-20200722191435-e381ff40d66b
+	gioui.org v0.0.0-20200912153211-2f67feafc0a2
 	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/ericpauley/go-quantize v0.0.0-20200331213906-ae555eb2afa4 // indirect
 	github.com/fogleman/contourmap v0.0.0-20190814184649-9f61d36c4199
