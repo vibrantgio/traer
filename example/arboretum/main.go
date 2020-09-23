@@ -30,11 +30,11 @@ const (
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	go Arboretum(NumNodes)
+	go RandomArboretum(NumNodes)
 	app.Main()
 }
 
-func Arboretum(NumNodes int) {
+func RandomArboretum(NumNodes int) {
 	window := app.NewWindow(
 		app.Title("Traer Physics: Random Arboretum"),
 		app.Size(unit.Dp(WindowWidthDp), unit.Dp(WindowHeightDp)),
