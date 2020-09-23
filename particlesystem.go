@@ -114,6 +114,10 @@ func (ps *ParticleSystem) MakeSpring(a, b *Particle, strength, damping, restLeng
 // that Tick call. Increase t to a higher value in order to make the
 // simulation run SLOWER, as a higher t will lead to a lower 1/t value forcing
 // the simulation to run smaller time increments for every call to Tick.
+//
+// Note that target framerate in TraerAS3 was 31fps and it used Tick(1). We
+// usually get 60fps so we can double the step size and by doing so splitting
+// the step time in half.
 func (ps *ParticleSystem) Tick(t float64) float64 {
 	return ps.Step(t)
 }
