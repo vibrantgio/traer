@@ -1,6 +1,7 @@
 package main
 
 import (
+	"image/color"
 	"math"
 	"math/rand"
 
@@ -12,6 +13,12 @@ import (
 	"golang.org/x/exp/shiny/materialdesign/colornames"
 
 	"github.com/reactivego/traer"
+)
+
+var (
+	DeepPurple500 = color.NRGBAModel.Convert(colornames.DeepPurple500).(color.NRGBA)
+	DeepPurple800 = color.NRGBAModel.Convert(colornames.DeepPurple800).(color.NRGBA)
+	DeepOrange500 = color.NRGBAModel.Convert(colornames.DeepOrange500).(color.NRGBA)
 )
 
 type Arboretum struct {
@@ -108,9 +115,9 @@ func (ps *Arboretum) DrawNetwork(rect f32.Rectangle) op.CallOp {
 		path.Line(to(a.Add(ncw)))
 		path.Line(to(a.Add(nccw)))
 	}
-	path.End().Add(ops)
-	paint.ColorOp{Color: colornames.DeepPurple500}.Add(ops)
-	paint.PaintOp{Rect: rect}.Add(ops)
+	clip.Outline{Path: path.End()}.Op().Add(ops)
+	paint.ColorOp{Color: DeepPurple500}.Add(ops)
+	paint.PaintOp{}.Add(ops)
 	stack.Pop()
 
 	// render edges
@@ -125,9 +132,9 @@ func (ps *Arboretum) DrawNetwork(rect f32.Rectangle) op.CallOp {
 		path.Line(to(p.Add(f32.Point{-nodesize, nodesize})))
 		path.Line(to(p.Add(f32.Point{-nodesize, -nodesize})))
 	}
-	path.End().Add(ops)
-	paint.ColorOp{Color: colornames.DeepOrange500}.Add(ops)
-	paint.PaintOp{Rect: rect}.Add(ops)
+	clip.Outline{Path: path.End()}.Op().Add(ops)
+	paint.ColorOp{Color: DeepOrange500}.Add(ops)
+	paint.PaintOp{}.Add(ops)
 	stack.Pop()
 
 	// render root node
@@ -136,9 +143,9 @@ func (ps *Arboretum) DrawNetwork(rect f32.Rectangle) op.CallOp {
 	particle := ps.Particles[0]
 	p := f32.Point{float32(particle.Position.X), float32(particle.Position.Y)}
 	const nodesize = 5
-	area := CircleClip(to(p), 3*nodesize*scale, ops)
-	paint.ColorOp{Color: colornames.DeepPurple800}.Add(ops)
-	paint.PaintOp{Rect: area}.Add(ops)
+	clip.Outline{Path: Circle(to(p), 3*nodesize*scale, ops)}.Op().Add(ops)
+	paint.ColorOp{Color: DeepPurple800}.Add(ops)
+	paint.PaintOp{}.Add(ops)
 	stack.Pop()
 
 	return macro.Stop()

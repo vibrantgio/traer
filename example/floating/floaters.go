@@ -154,7 +154,7 @@ func (s *Floaters) Render() op.CallOp {
 		}
 		path.Quad(quad(c[lenc-1], c[0]))
 	}
-	path.End().Add(ops)
+	clip.Outline{Path: path.End()}.Op().Add(ops)
 
 	return macro.Stop()
 }

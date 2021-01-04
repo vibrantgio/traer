@@ -6,7 +6,7 @@ import (
 	"gioui.org/op/clip"
 )
 
-func CircleClip(p f32.Point, r float32, ops *op.Ops) f32.Rectangle {
+func Circle(p f32.Point, r float32, ops *op.Ops) clip.PathSpec {
 	// original bezier circle const c = 0.55228475 // 4*(sqrt(2)-1)/3
 	// better bezier circle const c = 0.551915024494
 	// 	see http://spencermortensen.com/articles/bezier-circle/
@@ -26,7 +26,5 @@ func CircleClip(p f32.Point, r float32, ops *op.Ops) f32.Rectangle {
 	path.Cube(f32.Point{X: 0, Y: -(r * c)}, f32.Point{X: (1 - c) * r, Y: -r}, ne)
 	path.Cube(f32.Point{X: r * c, Y: 0}, f32.Point{X: r, Y: (1 - c) * r}, se)
 	path.Move(west)
-	path.End().Add(ops)
-	extent := f32.Point{r, r}
-	return f32.Rectangle{Min: p.Sub(extent), Max: p.Add(extent)}
+	return path.End()
 }

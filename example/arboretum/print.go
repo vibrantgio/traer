@@ -7,7 +7,6 @@ import (
 	"image/color"
 	"sync"
 
-	"golang.org/x/exp/shiny/materialdesign/colornames"
 	"golang.org/x/image/math/fixed"
 
 	"eliasnaur.com/font/roboto/robotoblack"
@@ -31,8 +30,17 @@ import (
 )
 
 var (
-	once       sync.Once
+	once   sync.Once
 	roboto []text.FontFace
+)
+
+const (
+	Thin   = 100 - 400
+	Light  = 200 - 400
+	Normal = text.Normal
+	Medium = text.Medium
+	Bold   = text.Bold
+	Black  = 800 - 400
 )
 
 func RobotoFontFaces() []text.FontFace {
@@ -45,62 +53,61 @@ func RobotoFontFaces() []text.FontFace {
 		roboto = append(roboto, text.FontFace{Font: fnt, Face: face})
 	}
 	once.Do(func() {
-		// Weight: Normal (400)
-		register(text.Font{}, robotoregular.TTF)
-		register(text.Font{Style: text.Italic}, robotoitalic.TTF)
+		// Normal (400)
+		register(text.Font{Weight: Normal}, robotoregular.TTF)
+		register(text.Font{Weight: Normal, Style: text.Italic}, robotoitalic.TTF)
 
-		// Weight: Thin (100)
-		register(text.Font{Weight: 100}, robotothin.TTF)
-		register(text.Font{Style: text.Italic, Weight: 100}, robotothinitalic.TTF)
+		// Thin (100)
+		register(text.Font{Weight: Thin}, robotothin.TTF)
+		register(text.Font{Weight: Thin, Style: text.Italic}, robotothinitalic.TTF)
 
-		// Weight: Light (200)
-		register(text.Font{Weight: 200}, robotolight.TTF)
-		register(text.Font{Style: text.Italic, Weight: 200}, robotolightitalic.TTF)
+		// Light (200)
+		register(text.Font{Weight: Light}, robotolight.TTF)
+		register(text.Font{Weight: Light, Style: text.Italic}, robotolightitalic.TTF)
 
-		// Weight: Medium (500)
-		register(text.Font{Weight: text.Medium}, robotomedium.TTF)
-		register(text.Font{Weight: text.Medium, Style: text.Italic}, robotomediumitalic.TTF)
+		// Medium (500)
+		register(text.Font{Weight: Medium}, robotomedium.TTF)
+		register(text.Font{Weight: Medium, Style: text.Italic}, robotomediumitalic.TTF)
 
-		// Weight: Bold (600)
-		register(text.Font{Weight: text.Bold}, robotobold.TTF)
-		register(text.Font{Style: text.Italic, Weight: text.Bold}, robotobolditalic.TTF)
+		// Bold (600)
+		register(text.Font{Weight: Bold}, robotobold.TTF)
+		register(text.Font{Weight: Bold, Style: text.Italic}, robotobolditalic.TTF)
 
-		// Weight: Black (800)
-		register(text.Font{Weight: 800}, robotoblack.TTF)
-		register(text.Font{Style: text.Italic, Weight: 800}, robotoblackitalic.TTF)
+		// Black (800)
+		register(text.Font{Weight: Black}, robotoblack.TTF)
+		register(text.Font{Weight: Black, Style: text.Italic}, robotoblackitalic.TTF)
 	})
 	return roboto
 }
 
 var (
-	RobotoThin   = text.Font{"Roboto", "", text.Regular, 100}
-	RobotoLight  = text.Font{"Roboto", "", text.Regular, 200}
-	RobotoNormal = text.Font{"Roboto", "", text.Regular, text.Normal /*400*/}
-	RobotoMedium = text.Font{"Roboto", "", text.Regular, text.Medium /*500*/}
-	RobotoBold   = text.Font{"Roboto", "", text.Regular, text.Bold /*600*/}
-	RobotoBlack  = text.Font{"Roboto", "", text.Regular, 800}
+	RobotoThin   = text.Font{"Roboto", "", text.Regular, Thin}
+	RobotoLight  = text.Font{"Roboto", "", text.Regular, Light}
+	RobotoNormal = text.Font{"Roboto", "", text.Regular, Normal}
+	RobotoMedium = text.Font{"Roboto", "", text.Regular, Medium}
+	RobotoBold   = text.Font{"Roboto", "", text.Regular, Bold}
+	RobotoBlack  = text.Font{"Roboto", "", text.Regular, Black}
 )
 
 type TextStyle struct {
-	Font  text.Font
-	Size  int
-	Color color.RGBA
+	Font text.Font
+	Size int
 }
 
 var (
-	H1        = TextStyle{RobotoThin, 96, colornames.Black}   // w300
-	H2        = TextStyle{RobotoLight, 60, colornames.Black}  // w300
-	H3        = TextStyle{RobotoNormal, 48, colornames.Black} // w400
-	H4        = TextStyle{RobotoNormal, 34, colornames.Black} // w400
-	H5        = TextStyle{RobotoNormal, 24, colornames.Black} // w400
-	H6        = TextStyle{RobotoMedium, 20, colornames.Black} // w500
-	Subtitle1 = TextStyle{RobotoNormal, 16, colornames.Black} // w400
-	Subtitle2 = TextStyle{RobotoMedium, 14, colornames.Black} // w500
-	BodyText1 = TextStyle{RobotoNormal, 16, colornames.Black} // w400
-	BodyText2 = TextStyle{RobotoNormal, 14, colornames.Black} // w400
-	Button    = TextStyle{RobotoMedium, 14, colornames.Black} // w500
-	Caption   = TextStyle{RobotoNormal, 12, colornames.Black} // w400
-	Overline  = TextStyle{RobotoNormal, 10, colornames.Black} // w400
+	H1        = TextStyle{RobotoThin, 96}   // w300
+	H2        = TextStyle{RobotoLight, 60}  // w300
+	H3        = TextStyle{RobotoNormal, 48} // w400
+	H4        = TextStyle{RobotoNormal, 34} // w400
+	H5        = TextStyle{RobotoNormal, 24} // w400
+	H6        = TextStyle{RobotoMedium, 20} // w500
+	Subtitle1 = TextStyle{RobotoNormal, 16} // w400
+	Subtitle2 = TextStyle{RobotoMedium, 14} // w500
+	BodyText1 = TextStyle{RobotoNormal, 16} // w400
+	BodyText2 = TextStyle{RobotoNormal, 14} // w400
+	Button    = TextStyle{RobotoMedium, 14} // w500
+	Caption   = TextStyle{RobotoNormal, 12} // w400
+	Overline  = TextStyle{RobotoNormal, 10} // w400
 )
 
 var shaper = text.NewCache(RobotoFontFaces())
@@ -117,8 +124,8 @@ func TextSize(txt string, width float32, style TextStyle) (dx, dy float32) {
 	return
 }
 
-func PrintText(txt string, pt f32.Point, ax, ay, width float32, style TextStyle, ops *op.Ops) (dx, dy float32) {
-	lines := shaper.LayoutString(style.Font, fixed.I(style.Size), int(width), txt)
+func PrintText(txt string, r f32.Rectangle, ax, ay float32, style TextStyle, col color.NRGBA, ops *op.Ops) (dx, dy float32) {
+	lines := shaper.LayoutString(style.Font, fixed.I(style.Size), int(r.Dx()), txt)
 	for _, line := range lines {
 		dy += float32(line.Ascent.Ceil() + line.Descent.Ceil())
 		lineWidth := float32(line.Width.Ceil())
@@ -126,18 +133,15 @@ func PrintText(txt string, pt f32.Point, ax, ay, width float32, style TextStyle,
 			dx = lineWidth
 		}
 	}
-	txtPos := 0
-	offset := f32.Pt(pt.X-ax*dx, pt.Y-ay*dy)
+	offset := f32.Pt(r.Min.X+ax*(r.Dx()-dx), r.Min.Y+ay*(r.Dy()-dy))
 	for _, line := range lines {
 		stack := op.Push(ops)
-		bounds := f32.Rect(0, float32(-line.Ascent.Ceil()), float32(line.Width.Ceil()), float32(line.Descent.Ceil()))
-		offset.Y -= bounds.Min.Y
+		offset.Y += float32(line.Ascent.Ceil())
 		op.Offset(offset).Add(ops)
-		offset.Y += bounds.Max.Y
-		shaper.ShapeString(style.Font, fixed.I(style.Size), txt[txtPos:txtPos+line.Len], line.Layout).Add(ops)
-		txtPos += line.Len
-		paint.ColorOp{Color: style.Color}.Add(ops)
-		paint.PaintOp{Rect: bounds}.Add(ops)
+		offset.Y += float32(line.Descent.Ceil())
+		shaper.Shape(style.Font, fixed.I(style.Size), line.Layout).Add(ops)
+		paint.ColorOp{Color: col}.Add(ops)
+		paint.PaintOp{}.Add(ops)
 		stack.Pop()
 	}
 	return

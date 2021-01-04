@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-	"image"
-	"log"
+	"image/color"
 	"math"
 	"os"
 
@@ -28,9 +27,14 @@ const (
 	NumBalls     = 60
 )
 
+var (
+	Grey50       = color.NRGBAModel.Convert(colornames.Grey50).(color.NRGBA)
+	Grey200      = color.NRGBAModel.Convert(colornames.Grey200).(color.NRGBA)
+	Grey900      = color.NRGBAModel.Convert(colornames.Grey900).(color.NRGBA)
+	LightBlue500 = color.NRGBAModel.Convert(colornames.LightBlue500).(color.NRGBA)
+)
+
 func main() {
-	log.SetOutput(os.Stderr)
-	log.SetFlags(log.Lmicroseconds)
 	go Floating()
 	app.Main()
 }
@@ -40,9 +44,9 @@ func Floating() {
 		app.Title("Traer Physics: Free Floating"),
 		app.Size(unit.Dp(WindowWidthDp), unit.Dp(WindowHeightDp)),
 	)
-	ops := new(op.Ops)
 	floaters := MakeFloaters(WindowWidthDp, WindowHeightDp, BallVelocity, BallRadius, NumBalls)
 	fps := FPS{}
+	ops := new(op.Ops)
 	for event := range window.Events() {
 		if frame, ok := event.(system.FrameEvent); ok {
 			ops.Reset()
@@ -52,40 +56,37 @@ func Floating() {
 			// the step time in half.
 			activity := floaters.Tick(math.Max(1, fps.Value/30))
 
-			cw := float64(frame.Size.X)
-			ch := float64(frame.Size.Y)
-			floaters.Position(cw, ch)
-			floaters.Contour(cw, ch)
-
 			// Fill backdrop
-			backdrop := f32.Rect(0, 0, float32(cw), float32(ch))
-			paint.ColorOp{colornames.Grey50}.Add(ops)
-			paint.PaintOp{Rect: backdrop}.Add(ops)
+			paint.ColorOp{Grey50}.Add(ops)
+			paint.PaintOp{}.Add(ops)
+
+			dx, dy := float64(frame.Size.X), float64(frame.Size.Y)
+			floaters.Position(dx, dy)
+			floaters.Contour(dx, dy)
 
 			// Render contours
 			stack := op.Push(ops)
 			floaters.Render().Add(ops)
-			paint.ColorOp{colornames.LightBlue500}.Add(ops)
-			paint.PaintOp{Rect: backdrop}.Add(ops)
+			paint.ColorOp{LightBlue500}.Add(ops)
+			paint.PaintOp{}.Add(ops)
 			stack.Pop()
 
 			// Render attractor
 			stack = op.Push(ops)
 			radius := float32(20)
-			color := colornames.Grey900
+			color := Grey900
 			if floaters.AttractorStrength < 0 {
 				radius = 50
-				color = colornames.Grey200
+				color = Grey200
 			}
 			fap := floaters.Attractor.Position
 			ap := f32.Pt(float32(fap.X), float32(fap.Y))
-			area := CircleClip(ap, radius, ops)
+			clip.Outline{Path: Circle(ap, radius, ops)}.Op().Add(ops)
 			paint.ColorOp{Color: color}.Add(ops)
-			paint.PaintOp{Rect: area}.Add(ops)
+			paint.PaintOp{}.Add(ops)
 			stack.Pop()
 
 			stack = op.Push(ops)
-			clip.Rect(image.Rect(0, 0, frame.Size.X, frame.Size.Y)).Add(ops)
 			pointer.InputOp{Tag: floaters, Types: pointer.Press | pointer.Release | pointer.Drag}.Add(ops)
 			for _, e := range frame.Queue.Events(floaters) {
 				if point, ok := e.(pointer.Event); ok {
@@ -94,15 +95,14 @@ func Floating() {
 			}
 			stack.Pop()
 
-			PrintText("Free Floating", backdrop.Min, 0.0, 0.0, backdrop.Dx(), H2, ops)
+			rect := f32.Rect(12, 12, float32(dx-12), float32(dy-12))
+			PrintText("Free Floating", rect, 0.0, 0.0, H2, Grey900, ops)
 			fps.Tick()
 			if activity > 0.01 {
-				PrintText(fmt.Sprint(fps, "fps"), f32.Pt(backdrop.Min.X, backdrop.Max.Y), 0.0, 1.0, backdrop.Dx(), H4, ops)
+				PrintText(fmt.Sprint(fps, "fps"), rect, 1.0, 1.0, H4, Grey900, ops)
 				op.InvalidateOp{}.Add(ops)
 			}
 			frame.Frame(ops)
-		} else if _, ok := event.(pointer.Event); !ok {
-			log.Printf("%T%+v\n", event, event)
 		}
 	}
 	os.Exit(0)
