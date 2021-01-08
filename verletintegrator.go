@@ -13,7 +13,6 @@ import "math"
 //	p.Position = position
 func MakeDefaultVerletIntegrator(ps *ParticleSystem) IntegrationStep {
 	step := func(t float64) float64 {
-		ps.ClearForces()
 		ps.ApplyForces()
 
 		dt := 1.0 / t
@@ -43,7 +42,6 @@ func MakeDefaultVerletIntegrator(ps *ParticleSystem) IntegrationStep {
 //	p.Velocity.AddAssign(a.Scale(1.0 / t))
 func MakeVelocityVerletIntegrator(ps *ParticleSystem) IntegrationStep {
 	step := func (t float64) float64 {
-		ps.ClearForces()
 		ps.ApplyForces()
 
 		dt := 1.0 / t

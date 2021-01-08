@@ -122,22 +122,17 @@ func (ps *ParticleSystem) Tick(t float64) float64 {
 	return ps.Step(t)
 }
 
-func (ps *ParticleSystem) ClearForces() {
-	for _, p := range ps.Particles {
-		p.Force = Vec3{}
-	}
-}
-
 // ApplyForces wil apply gravity, drag, spring and attraction forces to
 // particles
 func (ps *ParticleSystem) ApplyForces() {
-	if ps.Gravity.Length() > 0.0 {
-		for _, particle := range ps.Particles {
+	for _, particle := range ps.Particles {
+		if ps.Gravity.Length() > 0.0 {
 			// Original Traer Physics version 3.0 does not take particle mass
 			// into account for gravity. Only matters for partcles with mass
-			// different from the default 1.0 value.
-			force := ps.Gravity.Scale(particle.Mass)
-			particle.Force.AddAssign(force)
+			// different from the default 1.0 value though.
+			particle.Force = ps.Gravity.Scale(particle.Mass)
+		} else {
+			particle.Force = Vec3{}
 		}
 	}
 
