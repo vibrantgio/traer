@@ -95,7 +95,8 @@ func Floating() {
 			}
 			stack.Pop()
 
-			rect := f32.Rect(12, 12, float32(dx-12), float32(dy-12))
+			inset := float32(frame.Metric.Px(unit.Dp(12)))
+			rect := f32.Rect(inset, inset, float32(dx)-inset, float32(dy)-inset)
 			PrintText("Free Floating", rect, 0.0, 0.0, H2, Grey900, ops)
 			fps.Tick()
 			if activity > 0.01 {
