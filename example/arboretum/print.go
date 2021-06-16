@@ -27,6 +27,7 @@ import (
 	"gioui.org/op"
 	"gioui.org/op/paint"
 	"gioui.org/text"
+	"gioui.org/unit"
 )
 
 var (
@@ -112,8 +113,9 @@ var (
 
 var shaper = text.NewCache(RobotoFontFaces())
 
-func TextSize(txt string, width float32, style TextStyle) (dx, dy float32) {
-	lines := shaper.LayoutString(style.Font, fixed.I(style.Size), int(width), txt)
+func TextSize(txt string, width float32, style TextStyle, metric unit.Metric) (dx, dy float32) {
+	size := fixed.I(metric.Px(unit.Sp(float32(style.Size))))
+	lines := shaper.LayoutString(style.Font, size, int(width), txt)
 	for _, line := range lines {
 		dy += float32(line.Ascent.Ceil() + line.Descent.Ceil())
 		lineWidth := float32(line.Width.Ceil())
@@ -124,8 +126,9 @@ func TextSize(txt string, width float32, style TextStyle) (dx, dy float32) {
 	return
 }
 
-func PrintText(txt string, r f32.Rectangle, ax, ay float32, style TextStyle, col color.NRGBA, ops *op.Ops) (dx, dy float32) {
-	lines := shaper.LayoutString(style.Font, fixed.I(style.Size), int(r.Dx()), txt)
+func PrintText(txt string, r f32.Rectangle, ax, ay float32, style TextStyle, col color.NRGBA, metric unit.Metric, ops *op.Ops) (dx, dy float32) {
+	size := fixed.I(metric.Px(unit.Sp(float32(style.Size))))
+	lines := shaper.LayoutString(style.Font, size, int(r.Dx()), txt)
 	for _, line := range lines {
 		dy += float32(line.Ascent.Ceil() + line.Descent.Ceil())
 		lineWidth := float32(line.Width.Ceil())
@@ -135,14 +138,14 @@ func PrintText(txt string, r f32.Rectangle, ax, ay float32, style TextStyle, col
 	}
 	offset := f32.Pt(r.Min.X+ax*(r.Dx()-dx), r.Min.Y+ay*(r.Dy()-dy))
 	for _, line := range lines {
-		stack := op.Push(ops)
+		state := op.Save(ops)
 		offset.Y += float32(line.Ascent.Ceil())
 		op.Offset(offset).Add(ops)
 		offset.Y += float32(line.Descent.Ceil())
-		shaper.Shape(style.Font, fixed.I(style.Size), line.Layout).Add(ops)
+		shaper.Shape(style.Font, size, line.Layout).Add(ops)
 		paint.ColorOp{Color: col}.Add(ops)
 		paint.PaintOp{}.Add(ops)
-		stack.Pop()
+		state.Load()
 	}
 	return
 }

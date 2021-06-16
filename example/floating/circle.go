@@ -25,6 +25,7 @@ func Circle(p f32.Point, r float32, ops *op.Ops) clip.PathSpec {
 	path.Cube(f32.Point{X: -(r * c), Y: 0}, f32.Point{X: -r, Y: (c - 1) * r}, nw)
 	path.Cube(f32.Point{X: 0, Y: -(r * c)}, f32.Point{X: (1 - c) * r, Y: -r}, ne)
 	path.Cube(f32.Point{X: r * c, Y: 0}, f32.Point{X: r, Y: (1 - c) * r}, se)
+	path.Close()
 	path.Move(west)
 	return path.End()
 }

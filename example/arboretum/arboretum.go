@@ -9,6 +9,7 @@ import (
 	"gioui.org/op"
 	"gioui.org/op/clip"
 	"gioui.org/op/paint"
+	"gioui.org/unit"
 
 	"golang.org/x/exp/shiny/materialdesign/colornames"
 
@@ -69,7 +70,10 @@ func (ps *Arboretum) aabb() (float64, float64, float64, float64) {
 	return minX, minY, maxX, maxY
 }
 
-func (ps *Arboretum) DrawNetwork(rect f32.Rectangle) op.CallOp {
+func (ps *Arboretum) DrawNetwork(rect f32.Rectangle, metric unit.Metric) op.CallOp {
+	px := func(v float32) float32 { return float32(metric.Px(unit.Dp(v))) }
+	insets := f32.Pt(px(20), px(20))
+
 	minX, minY, maxX, maxY := ps.aabb()
 	if MinWidthDp > (maxX - minX) {
 		outsetX := (MinWidthDp - maxX + minX) / 2
@@ -82,11 +86,11 @@ func (ps *Arboretum) DrawNetwork(rect f32.Rectangle) op.CallOp {
 		maxY += outsetY
 	}
 	contentCentroid := f32.Point{float32(minX + maxX), float32(minY + maxY)}.Mul(0.5)
-	inset := f32.Point{20, 20}
-	insets := f32.Rectangle{rect.Min.Add(inset), rect.Max.Sub(inset)}
 
-	screenCentre := insets.Min.Add(insets.Size().Mul(0.5))
-	scale := float32(math.Min(float64(insets.Dx()), float64(insets.Dy())) / math.Max(maxX-minX, maxY-minY))
+	rect = f32.Rectangle{rect.Min.Add(insets), rect.Max.Sub(insets)}
+	screenCentre := rect.Min.Add(rect.Size().Mul(0.5))
+
+	scale := float32(math.Min(float64(rect.Dx()), float64(rect.Dy())) / math.Max(maxX-minX, maxY-minY))
 	var pen f32.Point
 	to := func(p f32.Point) f32.Point {
 		absolutepoint := p.Sub(contentCentroid).Mul(scale).Add(screenCentre)
@@ -97,8 +101,9 @@ func (ps *Arboretum) DrawNetwork(rect f32.Rectangle) op.CallOp {
 
 	ops := &op.Ops{}
 	macro := op.Record(ops)
-	// render nodes
-	stack := op.Push(ops)
+
+	// render edges
+	state := op.Save(ops)
 	path := &clip.Path{}
 	path.Begin(ops)
 	for _, spring := range ps.Springs {
@@ -107,46 +112,48 @@ func (ps *Arboretum) DrawNetwork(rect f32.Rectangle) op.CallOp {
 		b := f32.Point{float32(spring.B.Position.X), float32(spring.B.Position.Y)}
 		d := b.Sub(a)
 		d = d.Mul(float32(1.0 / math.Hypot(float64(d.X), float64(d.Y))))
-		nccw := f32.Point{-d.Y, d.X}
-		ncw := f32.Point{d.Y, -d.X}
+		nccw := f32.Point{-px(d.Y), px(d.X)}
+		ncw := f32.Point{px(d.Y), -px(d.X)}
 		path.Move(to(a.Add(nccw)))
 		path.Line(to(b.Add(nccw)))
 		path.Line(to(b.Add(ncw)))
 		path.Line(to(a.Add(ncw)))
 		path.Line(to(a.Add(nccw)))
+		path.Close()
 	}
 	clip.Outline{Path: path.End()}.Op().Add(ops)
 	paint.ColorOp{Color: DeepPurple500}.Add(ops)
 	paint.PaintOp{}.Add(ops)
-	stack.Pop()
+	state.Load()
 
-	// render edges
-	stack = op.Push(ops)
+	// render nodes
+	state = op.Save(ops)
 	path.Begin(ops)
 	for _, particle := range ps.Particles[1:] {
 		p := f32.Point{float32(particle.Position.X), float32(particle.Position.Y)}
-		const nodesize = 5
+		var nodesize = px(5)
 		path.Move(to(p.Add(f32.Point{-nodesize, -nodesize})))
 		path.Line(to(p.Add(f32.Point{nodesize, -nodesize})))
 		path.Line(to(p.Add(f32.Point{nodesize, nodesize})))
 		path.Line(to(p.Add(f32.Point{-nodesize, nodesize})))
 		path.Line(to(p.Add(f32.Point{-nodesize, -nodesize})))
+		path.Close()
 	}
 	clip.Outline{Path: path.End()}.Op().Add(ops)
 	paint.ColorOp{Color: DeepOrange500}.Add(ops)
 	paint.PaintOp{}.Add(ops)
-	stack.Pop()
+	state.Load()
 
 	// render root node
-	stack = op.Push(ops)
+	state = op.Save(ops)
 	pen = f32.Point{0, 0}
 	particle := ps.Particles[0]
 	p := f32.Point{float32(particle.Position.X), float32(particle.Position.Y)}
-	const nodesize = 5
+	var nodesize = px(5)
 	clip.Outline{Path: Circle(to(p), 3*nodesize*scale, ops)}.Op().Add(ops)
 	paint.ColorOp{Color: DeepPurple800}.Add(ops)
 	paint.PaintOp{}.Add(ops)
-	stack.Pop()
+	state.Load()
 
 	return macro.Stop()
 }

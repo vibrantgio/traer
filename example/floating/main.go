@@ -65,14 +65,14 @@ func Floating() {
 			floaters.Contour(dx, dy)
 
 			// Render contours
-			stack := op.Push(ops)
+			state := op.Save(ops)
 			floaters.Render().Add(ops)
 			paint.ColorOp{LightBlue500}.Add(ops)
 			paint.PaintOp{}.Add(ops)
-			stack.Pop()
+			state.Load()
 
 			// Render attractor
-			stack = op.Push(ops)
+			state = op.Save(ops)
 			radius := float32(20)
 			color := Grey900
 			if floaters.AttractorStrength < 0 {
@@ -84,16 +84,16 @@ func Floating() {
 			clip.Outline{Path: Circle(ap, radius, ops)}.Op().Add(ops)
 			paint.ColorOp{Color: color}.Add(ops)
 			paint.PaintOp{}.Add(ops)
-			stack.Pop()
+			state.Load()
 
-			stack = op.Push(ops)
+			state = op.Save(ops)
 			pointer.InputOp{Tag: floaters, Types: pointer.Press | pointer.Release | pointer.Drag}.Add(ops)
 			for _, e := range frame.Queue.Events(floaters) {
 				if point, ok := e.(pointer.Event); ok {
 					floaters.Pointer(point)
 				}
 			}
-			stack.Pop()
+			state.Load()
 
 			inset := float32(frame.Metric.Px(unit.Dp(12)))
 			rect := f32.Rect(inset, inset, float32(dx)-inset, float32(dy)-inset)
