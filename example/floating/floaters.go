@@ -8,6 +8,7 @@ import (
 	"gioui.org/io/pointer"
 	"gioui.org/op"
 	"gioui.org/op/clip"
+	"gioui.org/unit"
 
 	"github.com/fogleman/contourmap"
 	"github.com/reactivego/traer"
@@ -91,7 +92,7 @@ func (s *Floaters) Position(Width, Height float64) {
 	}
 }
 
-func (s *Floaters) Contour(Width, Height float64) {
+func (s *Floaters) Contour(Width, Height float64, metric unit.Metric) {
 	w := int(Width * ContouringScale)
 	h := int(Height * ContouringScale)
 	if cap(s.Grid) < w*h {
@@ -107,7 +108,8 @@ func (s *Floaters) Contour(Width, Height float64) {
 			for _, b := range s.Balls {
 				dx := float64(x) - b.P.Position.X*ContouringScale
 				dy := float64(y) - b.P.Position.Y*ContouringScale
-				sum += (b.R * b.R * ContouringScale) / (dx*dx + dy*dy)
+				r := float64(metric.Px(unit.Dp(float32(b.R))))
+				sum += (r * r * ContouringScale) / (dx*dx + dy*dy)
 			}
 			s.Grid[rowstart+x] = sum
 		}

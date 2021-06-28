@@ -25,6 +25,8 @@ const (
 	BallVelocity = 50
 	BallRadius   = 8
 	NumBalls     = 60
+
+	AutoScale = false
 )
 
 var (
@@ -51,6 +53,11 @@ func Floating() {
 		if frame, ok := event.(system.FrameEvent); ok {
 			ops.Reset()
 
+			metric := frame.Metric
+			if !AutoScale {
+				metric = unit.Metric{PxPerDp: 1.0, PxPerSp: 1.0}
+			}
+
 			// Target framerate in TraerAS3 was 31fps it used Tick(1).
 			// We usually get 60fps so we can double the step size and by doing so splitting
 			// the step time in half.
@@ -62,7 +69,7 @@ func Floating() {
 
 			dx, dy := float64(frame.Size.X), float64(frame.Size.Y)
 			floaters.Position(dx, dy)
-			floaters.Contour(dx, dy)
+			floaters.Contour(dx, dy, metric)
 
 			// Render contours
 			state := op.Save(ops)
@@ -73,10 +80,10 @@ func Floating() {
 
 			// Render attractor
 			state = op.Save(ops)
-			radius := float32(20)
+			radius := float32(metric.Px(unit.Dp(20)))
 			color := Grey900
 			if floaters.AttractorStrength < 0 {
-				radius = 50
+				radius = float32(metric.Px(unit.Dp(50)))
 				color = Grey200
 			}
 			fap := floaters.Attractor.Position
@@ -95,12 +102,12 @@ func Floating() {
 			}
 			state.Load()
 
-			inset := float32(frame.Metric.Px(unit.Dp(12)))
+			inset := float32(metric.Px(unit.Dp(12)))
 			rect := f32.Rect(inset, inset, float32(dx)-inset, float32(dy)-inset)
-			PrintText("Free Floating", rect, 0.0, 0.0, H2, Grey900, ops)
+			PrintText("Free Floating", rect, 0.0, 0.0, H2, Grey900, metric, ops)
 			fps.Tick()
 			if activity > 0.01 {
-				PrintText(fmt.Sprint(fps, "fps"), rect, 1.0, 1.0, H4, Grey900, ops)
+				PrintText(fmt.Sprint(fps, "fps"), rect, 1.0, 1.0, H4, Grey900, metric, ops)
 				op.InvalidateOp{}.Add(ops)
 			}
 			frame.Frame(ops)

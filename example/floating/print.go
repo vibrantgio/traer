@@ -27,6 +27,7 @@ import (
 	"gioui.org/op"
 	"gioui.org/op/paint"
 	"gioui.org/text"
+	"gioui.org/unit"
 )
 
 var (
@@ -95,25 +96,26 @@ type TextStyle struct {
 }
 
 var (
-	H1        = TextStyle{RobotoThin, 96}   // w300
-	H2        = TextStyle{RobotoLight, 60}  // w300
-	H3        = TextStyle{RobotoNormal, 48} // w400
-	H4        = TextStyle{RobotoNormal, 34} // w400
-	H5        = TextStyle{RobotoNormal, 24} // w400
-	H6        = TextStyle{RobotoMedium, 20} // w500
-	Subtitle1 = TextStyle{RobotoNormal, 16} // w400
-	Subtitle2 = TextStyle{RobotoMedium, 14} // w500
-	BodyText1 = TextStyle{RobotoNormal, 16} // w400
-	BodyText2 = TextStyle{RobotoNormal, 14} // w400
-	Button    = TextStyle{RobotoMedium, 14} // w500
-	Caption   = TextStyle{RobotoNormal, 12} // w400
-	Overline  = TextStyle{RobotoNormal, 10} // w400
+	H1        = TextStyle{Font: RobotoThin, Size: 96}   // w300
+	H2        = TextStyle{Font: RobotoLight, Size: 60}  // w300
+	H3        = TextStyle{Font: RobotoNormal, Size: 48} // w400
+	H4        = TextStyle{Font: RobotoNormal, Size: 34} // w400
+	H5        = TextStyle{Font: RobotoNormal, Size: 24} // w400
+	H6        = TextStyle{Font: RobotoMedium, Size: 20} // w500
+	Subtitle1 = TextStyle{Font: RobotoNormal, Size: 16} // w400
+	Subtitle2 = TextStyle{Font: RobotoMedium, Size: 14} // w500
+	BodyText1 = TextStyle{Font: RobotoNormal, Size: 16} // w400
+	BodyText2 = TextStyle{Font: RobotoNormal, Size: 14} // w400
+	Button    = TextStyle{Font: RobotoMedium, Size: 14} // w500
+	Caption   = TextStyle{Font: RobotoNormal, Size: 12} // w400
+	Overline  = TextStyle{Font: RobotoNormal, Size: 10} // w400
 )
 
 var shaper = text.NewCache(RobotoFontFaces())
 
-func TextSize(txt string, width float32, style TextStyle) (dx, dy float32) {
-	lines := shaper.LayoutString(style.Font, fixed.I(style.Size), int(width), txt)
+func TextSize(txt string, width float32, style TextStyle, metric unit.Metric) (dx, dy float32) {
+	size := fixed.I(metric.Px(unit.Sp(float32(style.Size))))
+	lines := shaper.LayoutString(style.Font, size, int(width), txt)
 	for _, line := range lines {
 		dy += float32(line.Ascent.Ceil() + line.Descent.Ceil())
 		lineWidth := float32(line.Width.Ceil())
@@ -124,8 +126,9 @@ func TextSize(txt string, width float32, style TextStyle) (dx, dy float32) {
 	return
 }
 
-func PrintText(txt string, r f32.Rectangle, ax, ay float32, style TextStyle, col color.NRGBA, ops *op.Ops) (dx, dy float32) {
-	lines := shaper.LayoutString(style.Font, fixed.I(style.Size), int(r.Dx()), txt)
+func PrintText(txt string, r f32.Rectangle, ax, ay float32, style TextStyle, col color.NRGBA, metric unit.Metric, ops *op.Ops) (dx, dy float32) {
+	size := fixed.I(metric.Px(unit.Sp(float32(style.Size))))
+	lines := shaper.LayoutString(style.Font, size, int(r.Dx()), txt)
 	for _, line := range lines {
 		dy += float32(line.Ascent.Ceil() + line.Descent.Ceil())
 		lineWidth := float32(line.Width.Ceil())
@@ -139,7 +142,7 @@ func PrintText(txt string, r f32.Rectangle, ax, ay float32, style TextStyle, col
 		offset.Y += float32(line.Ascent.Ceil())
 		op.Offset(offset).Add(ops)
 		offset.Y += float32(line.Descent.Ceil())
-		shaper.Shape(style.Font, fixed.I(style.Size), line.Layout).Add(ops)
+		shaper.Shape(style.Font, size, line.Layout).Add(ops)
 		paint.ColorOp{Color: col}.Add(ops)
 		paint.PaintOp{}.Add(ops)
 		state.Load()
