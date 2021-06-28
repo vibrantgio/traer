@@ -27,6 +27,8 @@ const (
 	MinHeightDp    = WindowHeightDp
 
 	NumNodes = 200
+
+	AutoScale = false
 )
 
 var (
@@ -52,6 +54,11 @@ func RandomArboretum(NumNodes int) {
 		if frame, ok := event.(system.FrameEvent); ok {
 			ops.Reset()
 
+			metric := frame.Metric
+			if !AutoScale {
+				metric = unit.Metric{PxPerDp: 1.0, PxPerSp: 1.0}
+			}
+
 			pointer.InputOp{Tag: arboretum, Types: pointer.Press}.Add(ops)
 			for _, event := range frame.Queue.Events(arboretum) {
 				if point, ok := event.(pointer.Event); ok {
@@ -76,15 +83,15 @@ func RandomArboretum(NumNodes int) {
 			paint.PaintOp{}.Add(ops)
 
 			rect := f32.Rect(0, 0, float32(frame.Size.X), float32(frame.Size.Y))
-			arboretum.DrawNetwork(rect, frame.Metric).Add(ops)
+			arboretum.DrawNetwork(rect, metric).Add(ops)
 
-			inset := float32(frame.Metric.Px(unit.Dp(12)))
+			inset := float32(metric.Px(unit.Dp(12)))
 
 			rect = f32.Rectangle{Min: rect.Min.Add(f32.Pt(inset, inset)), Max: rect.Max.Sub(f32.Pt(inset, inset))}
-			PrintText("Random Arboretum", rect, 0.0, 0.0, H2, Grey900, frame.Metric, ops)
+			PrintText("Random Arboretum", rect, 0.0, 0.0, H2, Grey900, metric, ops)
 			fps.Tick()
 			if activity > 2 {
-				PrintText(fmt.Sprint(fps, "fps"), rect, 1.0, 1.0, H4, Grey900, frame.Metric, ops)
+				PrintText(fmt.Sprint(fps, "fps"), rect, 1.0, 1.0, H4, Grey900, metric, ops)
 				op.InvalidateOp{}.Add(ops)
 			}
 			frame.Frame(ops)
