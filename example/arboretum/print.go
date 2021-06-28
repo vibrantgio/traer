@@ -82,12 +82,12 @@ func RobotoFontFaces() []text.FontFace {
 }
 
 var (
-	RobotoThin   = text.Font{"Roboto", "", text.Regular, Thin}
-	RobotoLight  = text.Font{"Roboto", "", text.Regular, Light}
-	RobotoNormal = text.Font{"Roboto", "", text.Regular, Normal}
-	RobotoMedium = text.Font{"Roboto", "", text.Regular, Medium}
-	RobotoBold   = text.Font{"Roboto", "", text.Regular, Bold}
-	RobotoBlack  = text.Font{"Roboto", "", text.Regular, Black}
+	RobotoThin   = text.Font{Typeface: "Roboto", Variant: "", Style: text.Regular, Weight: Thin}
+	RobotoLight  = text.Font{Typeface: "Roboto", Variant: "", Style: text.Regular, Weight: Light}
+	RobotoNormal = text.Font{Typeface: "Roboto", Variant: "", Style: text.Regular, Weight: Normal}
+	RobotoMedium = text.Font{Typeface: "Roboto", Variant: "", Style: text.Regular, Weight: Medium}
+	RobotoBold   = text.Font{Typeface: "Roboto", Variant: "", Style: text.Regular, Weight: Bold}
+	RobotoBlack  = text.Font{Typeface: "Roboto", Variant: "", Style: text.Regular, Weight: Black}
 )
 
 type TextStyle struct {
@@ -96,19 +96,19 @@ type TextStyle struct {
 }
 
 var (
-	H1        = TextStyle{RobotoThin, 96}   // w300
-	H2        = TextStyle{RobotoLight, 60}  // w300
-	H3        = TextStyle{RobotoNormal, 48} // w400
-	H4        = TextStyle{RobotoNormal, 34} // w400
-	H5        = TextStyle{RobotoNormal, 24} // w400
-	H6        = TextStyle{RobotoMedium, 20} // w500
-	Subtitle1 = TextStyle{RobotoNormal, 16} // w400
-	Subtitle2 = TextStyle{RobotoMedium, 14} // w500
-	BodyText1 = TextStyle{RobotoNormal, 16} // w400
-	BodyText2 = TextStyle{RobotoNormal, 14} // w400
-	Button    = TextStyle{RobotoMedium, 14} // w500
-	Caption   = TextStyle{RobotoNormal, 12} // w400
-	Overline  = TextStyle{RobotoNormal, 10} // w400
+	H1        = TextStyle{Font: RobotoThin, Size: 96}   // w300
+	H2        = TextStyle{Font: RobotoLight, Size: 60}  // w300
+	H3        = TextStyle{Font: RobotoNormal, Size: 48} // w400
+	H4        = TextStyle{Font: RobotoNormal, Size: 34} // w400
+	H5        = TextStyle{Font: RobotoNormal, Size: 24} // w400
+	H6        = TextStyle{Font: RobotoMedium, Size: 20} // w500
+	Subtitle1 = TextStyle{Font: RobotoNormal, Size: 16} // w400
+	Subtitle2 = TextStyle{Font: RobotoMedium, Size: 14} // w500
+	BodyText1 = TextStyle{Font: RobotoNormal, Size: 16} // w400
+	BodyText2 = TextStyle{Font: RobotoNormal, Size: 14} // w400
+	Button    = TextStyle{Font: RobotoMedium, Size: 14} // w500
+	Caption   = TextStyle{Font: RobotoNormal, Size: 12} // w400
+	Overline  = TextStyle{Font: RobotoNormal, Size: 10} // w400
 )
 
 var shaper = text.NewCache(RobotoFontFaces())

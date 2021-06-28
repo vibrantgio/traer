@@ -57,7 +57,7 @@ func Floating() {
 			activity := floaters.Tick(math.Max(1, fps.Value/30))
 
 			// Fill backdrop
-			paint.ColorOp{Grey50}.Add(ops)
+			paint.ColorOp{Color: Grey50}.Add(ops)
 			paint.PaintOp{}.Add(ops)
 
 			dx, dy := float64(frame.Size.X), float64(frame.Size.Y)
@@ -67,7 +67,7 @@ func Floating() {
 			// Render contours
 			state := op.Save(ops)
 			floaters.Render().Add(ops)
-			paint.ColorOp{LightBlue500}.Add(ops)
+			paint.ColorOp{Color: LightBlue500}.Add(ops)
 			paint.PaintOp{}.Add(ops)
 			state.Load()
 

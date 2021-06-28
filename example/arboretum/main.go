@@ -72,7 +72,7 @@ func RandomArboretum(NumNodes int) {
 			activity := arboretum.Tick(math.Max(1, fps.Value/30))
 
 			// Fill backdrop
-			paint.ColorOp{Grey100}.Add(ops)
+			paint.ColorOp{Color: Grey100}.Add(ops)
 			paint.PaintOp{}.Add(ops)
 
 			rect := f32.Rect(0, 0, float32(frame.Size.X), float32(frame.Size.Y))

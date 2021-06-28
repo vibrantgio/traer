@@ -117,7 +117,7 @@ func (s *Floaters) Contour(Width, Height float64) {
 	s.Contours = m.Contours(1)
 	for _, contour := range s.Contours {
 		for i, p := range contour {
-			contour[i] = contourmap.Point{p.X / ContouringScale, p.Y / ContouringScale}
+			contour[i] = contourmap.Point{X: p.X / ContouringScale, Y: p.Y / ContouringScale}
 			pointCount++
 		}
 	}
@@ -130,14 +130,14 @@ func (s *Floaters) Render() op.CallOp {
 	move := func(p contourmap.Point) f32.Point {
 		px, py := float32(p.X-pen.X), float32(p.Y-pen.Y)
 		pen = p
-		return f32.Point{px, py}
+		return f32.Point{X: px, Y: py}
 	}
 	quad := func(c, p contourmap.Point) (f32.Point, f32.Point) {
 		cx, cy := float32(c.X-pen.X), float32(c.Y-pen.Y)
 		px, py := float32(p.X-pen.X), float32(p.Y-pen.Y)
 		pen = p
 		curveCount++
-		return f32.Point{cx, cy}, f32.Point{px, py}
+		return f32.Point{X: cx, Y: cy}, f32.Point{X: px, Y: py}
 	}
 	ops := &op.Ops{}
 	macro := op.Record(ops)

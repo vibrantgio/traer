@@ -53,7 +53,7 @@ func (ps *Arboretum) AddNode() {
 
 	ps.MakeSpring(p, q, 0.2, 0.2, 20)
 
-	p.Position = traer.Vec3{q.Position.X + 2.0*rand.Float64() - 1.0, q.Position.Y + 2.0*rand.Float64() - 1.0, 0}
+	p.Position = traer.Vec3{X: q.Position.X + 2.0*rand.Float64() - 1.0, Y: q.Position.Y + 2.0*rand.Float64() - 1.0, Z: 0}
 }
 
 func (ps *Arboretum) aabb() (float64, float64, float64, float64) {
@@ -85,9 +85,9 @@ func (ps *Arboretum) DrawNetwork(rect f32.Rectangle, metric unit.Metric) op.Call
 		minY -= outsetY
 		maxY += outsetY
 	}
-	contentCentroid := f32.Point{float32(minX + maxX), float32(minY + maxY)}.Mul(0.5)
+	contentCentroid := f32.Point{X: float32(minX + maxX), Y: float32(minY + maxY)}.Mul(0.5)
 
-	rect = f32.Rectangle{rect.Min.Add(insets), rect.Max.Sub(insets)}
+	rect = f32.Rectangle{Min: rect.Min.Add(insets), Max: rect.Max.Sub(insets)}
 	screenCentre := rect.Min.Add(rect.Size().Mul(0.5))
 
 	scale := float32(math.Min(float64(rect.Dx()), float64(rect.Dy())) / math.Max(maxX-minX, maxY-minY))
@@ -108,12 +108,12 @@ func (ps *Arboretum) DrawNetwork(rect f32.Rectangle, metric unit.Metric) op.Call
 	path.Begin(ops)
 	for _, spring := range ps.Springs {
 		_ = spring
-		a := f32.Point{float32(spring.A.Position.X), float32(spring.A.Position.Y)}
-		b := f32.Point{float32(spring.B.Position.X), float32(spring.B.Position.Y)}
+		a := f32.Point{X: float32(spring.A.Position.X), Y: float32(spring.A.Position.Y)}
+		b := f32.Point{X: float32(spring.B.Position.X), Y: float32(spring.B.Position.Y)}
 		d := b.Sub(a)
 		d = d.Mul(float32(1.0 / math.Hypot(float64(d.X), float64(d.Y))))
-		nccw := f32.Point{-px(d.Y), px(d.X)}
-		ncw := f32.Point{px(d.Y), -px(d.X)}
+		nccw := f32.Point{X: -px(d.Y), Y: px(d.X)}
+		ncw := f32.Point{X: px(d.Y), Y: -px(d.X)}
 		path.Move(to(a.Add(nccw)))
 		path.Line(to(b.Add(nccw)))
 		path.Line(to(b.Add(ncw)))
@@ -130,13 +130,13 @@ func (ps *Arboretum) DrawNetwork(rect f32.Rectangle, metric unit.Metric) op.Call
 	state = op.Save(ops)
 	path.Begin(ops)
 	for _, particle := range ps.Particles[1:] {
-		p := f32.Point{float32(particle.Position.X), float32(particle.Position.Y)}
+		p := f32.Point{X: float32(particle.Position.X), Y: float32(particle.Position.Y)}
 		var nodesize = px(5)
-		path.Move(to(p.Add(f32.Point{-nodesize, -nodesize})))
-		path.Line(to(p.Add(f32.Point{nodesize, -nodesize})))
-		path.Line(to(p.Add(f32.Point{nodesize, nodesize})))
-		path.Line(to(p.Add(f32.Point{-nodesize, nodesize})))
-		path.Line(to(p.Add(f32.Point{-nodesize, -nodesize})))
+		path.Move(to(p.Add(f32.Point{X: -nodesize, Y: -nodesize})))
+		path.Line(to(p.Add(f32.Point{X: nodesize, Y: -nodesize})))
+		path.Line(to(p.Add(f32.Point{X: nodesize, Y: nodesize})))
+		path.Line(to(p.Add(f32.Point{X: -nodesize, Y: nodesize})))
+		path.Line(to(p.Add(f32.Point{X: -nodesize, Y: -nodesize})))
 		path.Close()
 	}
 	clip.Outline{Path: path.End()}.Op().Add(ops)
@@ -146,9 +146,9 @@ func (ps *Arboretum) DrawNetwork(rect f32.Rectangle, metric unit.Metric) op.Call
 
 	// render root node
 	state = op.Save(ops)
-	pen = f32.Point{0, 0}
+	pen = f32.Point{X: 0, Y: 0}
 	particle := ps.Particles[0]
-	p := f32.Point{float32(particle.Position.X), float32(particle.Position.Y)}
+	p := f32.Point{X: float32(particle.Position.X), Y: float32(particle.Position.Y)}
 	var nodesize = px(5)
 	clip.Outline{Path: Circle(to(p), 3*nodesize*scale, ops)}.Op().Add(ops)
 	paint.ColorOp{Color: DeepPurple800}.Add(ops)
