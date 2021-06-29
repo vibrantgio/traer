@@ -68,7 +68,7 @@ func Floating() {
 			paint.PaintOp{}.Add(ops)
 
 			dx, dy := float64(frame.Size.X), float64(frame.Size.Y)
-			floaters.Position(dx, dy)
+			floaters.Constrain(dx, dy)
 			floaters.Contour(dx, dy, metric)
 
 			// Render contours

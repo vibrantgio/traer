@@ -81,7 +81,7 @@ func (s *Floaters) Pointer(event pointer.Event) {
 	}
 }
 
-func (s *Floaters) Position(Width, Height float64) {
+func (s *Floaters) Constrain(Width, Height float64) {
 	for _, ball := range s.Balls {
 		p := ball.P.Position
 		wrapX := math.Mod(Width+p.X, Width)
