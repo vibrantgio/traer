@@ -26,7 +26,7 @@ const (
 	BallRadius   = 8
 	NumBalls     = 60
 
-	AutoScale = false
+	AutoScale = true
 )
 
 var (
@@ -72,14 +72,12 @@ func Floating() {
 			floaters.Contour(dx, dy, metric)
 
 			// Render contours
-			state := op.Save(ops)
-			floaters.Render().Add(ops)
+			state := clip.Outline{Path: floaters.Render(ops)}.Op().Push(ops)
 			paint.ColorOp{Color: LightBlue500}.Add(ops)
 			paint.PaintOp{}.Add(ops)
-			state.Load()
+			state.Pop()
 
 			// Render attractor
-			state = op.Save(ops)
 			radius := float32(metric.Px(unit.Dp(20)))
 			color := Grey900
 			if floaters.AttractorStrength < 0 {
@@ -88,19 +86,17 @@ func Floating() {
 			}
 			fap := floaters.Attractor.Position
 			ap := f32.Pt(float32(fap.X), float32(fap.Y))
-			clip.Outline{Path: Circle(ap, radius, ops)}.Op().Add(ops)
+			state = clip.Outline{Path: Circle(ap, radius, ops)}.Op().Push(ops)
 			paint.ColorOp{Color: color}.Add(ops)
 			paint.PaintOp{}.Add(ops)
-			state.Load()
+			state.Pop()
 
-			state = op.Save(ops)
 			pointer.InputOp{Tag: floaters, Types: pointer.Press | pointer.Release | pointer.Drag}.Add(ops)
 			for _, e := range frame.Queue.Events(floaters) {
 				if point, ok := e.(pointer.Event); ok {
 					floaters.Pointer(point)
 				}
 			}
-			state.Load()
 
 			inset := float32(metric.Px(unit.Dp(12)))
 			rect := f32.Rect(inset, inset, float32(dx)-inset, float32(dy)-inset)

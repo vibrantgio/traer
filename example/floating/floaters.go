@@ -126,7 +126,7 @@ func (s *Floaters) Contour(Width, Height float64, metric unit.Metric) {
 	// log.Printf("Contour resolution:w%dxh%d, points:%d\n", w, h, pointCount)
 }
 
-func (s *Floaters) Render() op.CallOp {
+func (s *Floaters) Render(ops *op.Ops) clip.PathSpec {
 	curveCount := 0
 	var pen contourmap.Point
 	move := func(p contourmap.Point) f32.Point {
@@ -141,8 +141,6 @@ func (s *Floaters) Render() op.CallOp {
 		curveCount++
 		return f32.Point{X: cx, Y: cy}, f32.Point{X: px, Y: py}
 	}
-	ops := &op.Ops{}
-	macro := op.Record(ops)
 	path := &clip.Path{}
 	path.Begin(ops)
 	for _, c := range s.Contours {
@@ -157,7 +155,5 @@ func (s *Floaters) Render() op.CallOp {
 		path.Quad(quad(c[lenc-1], c[0]))
 		path.Close()
 	}
-	clip.Outline{Path: path.End()}.Op().Add(ops)
-
-	return macro.Stop()
+	return path.End()
 }

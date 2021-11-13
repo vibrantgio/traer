@@ -28,7 +28,7 @@ const (
 
 	NumNodes = 200
 
-	AutoScale = false
+	AutoScale = true
 )
 
 var (
@@ -83,7 +83,7 @@ func RandomArboretum(NumNodes int) {
 			paint.PaintOp{}.Add(ops)
 
 			rect := f32.Rect(0, 0, float32(frame.Size.X), float32(frame.Size.Y))
-			arboretum.DrawNetwork(rect, metric).Add(ops)
+			arboretum.DrawNetwork(rect, metric, ops)
 
 			inset := float32(metric.Px(unit.Dp(12)))
 

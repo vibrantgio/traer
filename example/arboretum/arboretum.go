@@ -70,7 +70,7 @@ func (ps *Arboretum) aabb() (float64, float64, float64, float64) {
 	return minX, minY, maxX, maxY
 }
 
-func (ps *Arboretum) DrawNetwork(rect f32.Rectangle, metric unit.Metric) op.CallOp {
+func (ps *Arboretum) DrawNetwork(rect f32.Rectangle, metric unit.Metric, ops *op.Ops) {
 	px := func(v float32) float32 { return float32(metric.Px(unit.Dp(v))) }
 	insets := f32.Pt(px(20), px(20))
 
@@ -99,11 +99,7 @@ func (ps *Arboretum) DrawNetwork(rect f32.Rectangle, metric unit.Metric) op.Call
 		return relativePoint
 	}
 
-	ops := &op.Ops{}
-	macro := op.Record(ops)
-
 	// render edges
-	state := op.Save(ops)
 	path := &clip.Path{}
 	path.Begin(ops)
 	for _, spring := range ps.Springs {
@@ -121,13 +117,12 @@ func (ps *Arboretum) DrawNetwork(rect f32.Rectangle, metric unit.Metric) op.Call
 		path.Line(to(a.Add(nccw)))
 		path.Close()
 	}
-	clip.Outline{Path: path.End()}.Op().Add(ops)
+	cstack := clip.Outline{Path: path.End()}.Op().Push(ops)
 	paint.ColorOp{Color: DeepPurple500}.Add(ops)
 	paint.PaintOp{}.Add(ops)
-	state.Load()
+	cstack.Pop()
 
 	// render nodes
-	state = op.Save(ops)
 	path.Begin(ops)
 	for _, particle := range ps.Particles[1:] {
 		p := f32.Point{X: float32(particle.Position.X), Y: float32(particle.Position.Y)}
@@ -139,21 +134,18 @@ func (ps *Arboretum) DrawNetwork(rect f32.Rectangle, metric unit.Metric) op.Call
 		path.Line(to(p.Add(f32.Point{X: -nodesize, Y: -nodesize})))
 		path.Close()
 	}
-	clip.Outline{Path: path.End()}.Op().Add(ops)
+	cstack = clip.Outline{Path: path.End()}.Op().Push(ops)
 	paint.ColorOp{Color: DeepOrange500}.Add(ops)
 	paint.PaintOp{}.Add(ops)
-	state.Load()
+	cstack.Pop()
 
 	// render root node
-	state = op.Save(ops)
 	pen = f32.Point{X: 0, Y: 0}
 	particle := ps.Particles[0]
 	p := f32.Point{X: float32(particle.Position.X), Y: float32(particle.Position.Y)}
 	var nodesize = px(5)
-	clip.Outline{Path: Circle(to(p), 3*nodesize*scale, ops)}.Op().Add(ops)
+	cstack = clip.Outline{Path: Circle(to(p), 3*nodesize*scale, ops)}.Op().Push(ops)
 	paint.ColorOp{Color: DeepPurple800}.Add(ops)
 	paint.PaintOp{}.Add(ops)
-	state.Load()
-
-	return macro.Stop()
+	cstack.Pop()
 }
