@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Unlicense OR MIT
+
 package traer
 
 import (
@@ -5,6 +7,8 @@ import (
 	"time"
 )
 
+// FPS is a simple frame-per-second meter. It recomputes Value roughly once per
+// second from the number of Tick calls observed in that window.
 type FPS struct {
 	start time.Time
 	count float64
@@ -12,12 +16,16 @@ type FPS struct {
 	Value float64
 }
 
+// Tick records one frame. On the first call it initializes the measurement
+// window; Value stays 0 until at least one second has elapsed.
 func (f *FPS) Tick() *FPS {
-	if time.Since(f.start) > time.Second {
-		f.Value = f.count / time.Since(f.start).Seconds()
-		if f.Value == 0 {
-			f.Value = 60
-		}
+	if f.start.IsZero() {
+		f.start = time.Now()
+		return f
+	}
+	elapsed := time.Since(f.start)
+	if elapsed > time.Second {
+		f.Value = f.count / elapsed.Seconds()
 		f.start = time.Now()
 		f.count = 0
 	} else {

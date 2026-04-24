@@ -52,25 +52,25 @@ type KineticScroller struct {
 
 func NewScroller() *KineticScroller {
 	s := &KineticScroller{}
-	s.Physics = traer.MakeParticleSystem(SystemAcceleration, SystemDrag)
+	s.Physics = traer.NewParticleSystem(SystemAcceleration, SystemDrag)
 
 	// Horizontal
-	s.FixedParticleH = s.Physics.MakeDefaultParticle()
+	s.FixedParticleH = s.Physics.NewDefaultParticle()
 	s.FixedParticleH.Fixed = true
-	s.ContentParticleH = s.Physics.MakeDefaultParticle()
-	s.SpringH1 = s.Physics.MakeSpring(s.FixedParticleH, s.ContentParticleH, FixedSpringConstant, SpringDamping, 0)
-	s.PointerParticleH = s.Physics.MakeDefaultParticle()
+	s.ContentParticleH = s.Physics.NewDefaultParticle()
+	s.SpringH1 = s.Physics.NewSpring(s.FixedParticleH, s.ContentParticleH, FixedSpringConstant, SpringDamping, 0)
+	s.PointerParticleH = s.Physics.NewDefaultParticle()
 	s.PointerParticleH.Fixed = true
-	s.SpringH2 = s.Physics.MakeSpring(s.ContentParticleH, s.PointerParticleH, PointerSpringConstant, SpringDamping, 0)
+	s.SpringH2 = s.Physics.NewSpring(s.ContentParticleH, s.PointerParticleH, PointerSpringConstant, SpringDamping, 0)
 
 	// Vertical
-	s.FixedParticleV = s.Physics.MakeDefaultParticle()
+	s.FixedParticleV = s.Physics.NewDefaultParticle()
 	s.FixedParticleV.Fixed = true
-	s.ContentParticleV = s.Physics.MakeDefaultParticle()
-	s.SpringV1 = s.Physics.MakeSpring(s.FixedParticleV, s.ContentParticleV, FixedSpringConstant, SpringDamping, 0)
-	s.PointerParticleV = s.Physics.MakeDefaultParticle()
+	s.ContentParticleV = s.Physics.NewDefaultParticle()
+	s.SpringV1 = s.Physics.NewSpring(s.FixedParticleV, s.ContentParticleV, FixedSpringConstant, SpringDamping, 0)
+	s.PointerParticleV = s.Physics.NewDefaultParticle()
 	s.PointerParticleV.Fixed = true
-	s.SpringV2 = s.Physics.MakeSpring(s.ContentParticleV, s.PointerParticleV, PointerSpringConstant, SpringDamping, 0)
+	s.SpringV2 = s.Physics.NewSpring(s.ContentParticleV, s.PointerParticleV, PointerSpringConstant, SpringDamping, 0)
 
 	return s
 }

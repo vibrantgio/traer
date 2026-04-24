@@ -44,7 +44,7 @@ func Attraction() {
 	Grey900 := color.NRGBAModel.Convert(colornames.Grey900).(color.NRGBA)
 	Red400 := color.NRGBAModel.Convert(colornames.Red400).(color.NRGBA)
 
-	partsys := traer.MakeParticleSystem(0.0, 0.3)
+	partsys := traer.NewParticleSystem(0.0, 0.3)
 	partsys.Clear()
 
 	var anchor, particle, attractor *traer.Particle
@@ -60,13 +60,13 @@ func Attraction() {
 
 			if anchor == nil {
 				cx, cy := float64(frame.Size.X/2), float64(frame.Size.Y/2)
-				anchor = partsys.MakeParticle(1.0, cx, cy, 0)
+				anchor = partsys.NewParticle(1.0, cx, cy, 0)
 				anchor.Fixed = true
-				particle = partsys.MakeParticle(1.0, cx, cy, 0)
-				attractor = partsys.MakeParticle(1.0, cx, cy, 0)
+				particle = partsys.NewParticle(1.0, cx, cy, 0)
+				attractor = partsys.NewParticle(1.0, cx, cy, 0)
 				attractor.Fixed = true
-				partsys.MakeSpring(anchor, particle, 0.1, 0.01, 0)
-				partsys.MakeAttraction(attractor, particle, 9000, 30)
+				partsys.NewSpring(anchor, particle, 0.1, 0.01, 0)
+				partsys.NewAttraction(attractor, particle, 9000, 30)
 			}
 			activity := partsys.Tick(math.Max(1.2, fps.Value/30))
 

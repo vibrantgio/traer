@@ -5,12 +5,12 @@ package traer
 import "math"
 
 const (
-	DEFAULT_MASS = 1
+	DefaultMass = 1
 
-	// DEFAULT_GRAVITY is no gravity.
-	DEFAULT_GRAVITY = 0
+	// DefaultGravity is no gravity.
+	DefaultGravity = 0
 
-	DEFAULT_DRAG = 0.001
+	DefaultDrag = 0.001
 )
 
 // IntegrationStep is the interface common to all integration algorithms.
@@ -39,50 +39,50 @@ type ParticleSystem struct {
 	Step IntegrationStep
 }
 
-// MakeParticleSystem constructs a new particle system with some downward
+// NewParticleSystem constructs a new particle system with some downward
 // (positive y) or 3D gravity and some drag. You can make as many of these as
 // you'd like as long as forces from one system don't refer to particles from
 // another. I don't know what would happen if you connected particles from one
 // system to another.
-func MakeParticleSystem(g, drag float64) *ParticleSystem {
+func NewParticleSystem(g, drag float64) *ParticleSystem {
 	ps := &ParticleSystem{Gravity: Vec3{0, g, 0}, Drag: drag}
-	ps.Step = MakeVelocityVerletIntegrator(ps)
+	ps.Step = NewVelocityVerletIntegrator(ps)
 	return ps
 }
 
-// Construct a new particle system with DEFAULT_GRAVITY (0) and
-// DEFAULT_DRAG (0.001).
-func MakeDefaultParticleSystem() *ParticleSystem {
-	return MakeParticleSystem(DEFAULT_GRAVITY, DEFAULT_DRAG)
+// Construct a new particle system with DefaultGravity (0) and
+// DefaultDrag (0.001).
+func NewDefaultParticleSystem() *ParticleSystem {
+	return NewParticleSystem(DefaultGravity, DefaultDrag)
 }
 
 // Clear deletes all the particles and all the forces in the system (except
-// the omnipresent gravity and drag even if ther are 0).
+// the omnipresent gravity and drag even if they are 0).
 func (ps *ParticleSystem) Clear() {
 	ps.Particles = nil
 	ps.Attractions = nil
 	ps.Springs = nil
 }
 
-// MakeParticle creates a new particle in the system with some mass and at
+// NewParticle creates a new particle in the system with some mass and at
 // some x, y, z position.
-func (ps *ParticleSystem) MakeParticle(mass, x, y, z float64) *Particle {
+func (ps *ParticleSystem) NewParticle(mass, x, y, z float64) *Particle {
 	particle := &Particle{Mass: mass, Position: Vec3{x, y, z}}
 	ps.Particles = append(ps.Particles, particle)
 	return particle
 }
 
-// MakeDefaultParticle creates a new particle in the system with mass 1.0 at
+// NewDefaultParticle creates a new particle in the system with mass 1.0 at
 // x, y, z position (0, 0, 0).
-func (ps *ParticleSystem) MakeDefaultParticle() *Particle {
-	return ps.MakeParticle(DEFAULT_MASS, 0, 0, 0)
+func (ps *ParticleSystem) NewDefaultParticle() *Particle {
+	return ps.NewParticle(DefaultMass, 0, 0, 0)
 }
 
-// MakeAttraction makes an attraction (or repulsion) force between two
+// NewAttraction makes an attraction (or repulsion) force between two
 // particles. If the strength is negative they repel each other, if the
 // strength is positive they attract. There is also a minimum distance that
 // limits how strong this force can get close up.
-func (ps *ParticleSystem) MakeAttraction(a, b *Particle, strength, minimumDistance float64) *Attraction {
+func (ps *ParticleSystem) NewAttraction(a, b *Particle, strength, minimumDistance float64) *Attraction {
 	attraction := &Attraction{
 		A:                      a,
 		B:                      b,
@@ -94,7 +94,7 @@ func (ps *ParticleSystem) MakeAttraction(a, b *Particle, strength, minimumDistan
 	return attraction
 }
 
-// MakeSpring makes a spring in the system between 2 particles you have
+// NewSpring makes a spring in the system between 2 particles you have
 // previously created.
 //  strength -  A strong spring acts like a stick. A weak one takes a
 //    long time to return to its rest length.
@@ -102,7 +102,7 @@ func (ps *ParticleSystem) MakeAttraction(a, b *Particle, strength, minimumDistan
 //     down quickly, while a low damping spring oscillates.
 //  restLength - A spring wants to be at this length and acts on the
 //      particles to push or pull them exactly this far apart at all times.
-func (ps *ParticleSystem) MakeSpring(a, b *Particle, strength, damping, restLength float64) *Spring {
+func (ps *ParticleSystem) NewSpring(a, b *Particle, strength, damping, restLength float64) *Spring {
 	spring := &Spring{
 		A:          a,
 		B:          b,
@@ -134,7 +134,7 @@ func (ps *ParticleSystem) ApplyForces() {
 	for _, particle := range ps.Particles {
 		if ps.Gravity.Length() > 0.0 {
 			// Original Traer Physics version 3.0 does not take particle mass
-			// into account for gravity. Only matters for partcles with mass
+			// into account for gravity. Only matters for particles with mass
 			// different from the default 1.0 value though.
 			particle.Force = ps.Gravity.Scale(particle.Mass)
 		} else {

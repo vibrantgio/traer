@@ -4,14 +4,14 @@ package traer
 
 import "math"
 
-// MakeDefaultVerletIntegrator creates an integrator that performs the
-// following calculation for every particle p that is no fixed.
+// NewDefaultVerletIntegrator creates an integrator that performs the
+// following calculation for every particle p that is not fixed.
 //
 //	a := p.Force.Scale(1.0 / p.Mass)
-//	position := p.Position.Add(p.Velocity.Scale(1.0 / t)).Add(a.Scale(1.0 / (t * t))
+//	position := p.Position.Add(p.Velocity.Scale(1.0 / t)).Add(a.Scale(1.0 / (t * t)))
 //	p.Velocity = position.Subtract(p.Position).Scale(t)
 //	p.Position = position
-func MakeDefaultVerletIntegrator(ps *ParticleSystem) IntegrationStep {
+func NewDefaultVerletIntegrator(ps *ParticleSystem) IntegrationStep {
 	step := func(t float64) float64 {
 		ps.ApplyForces()
 
@@ -33,15 +33,15 @@ func MakeDefaultVerletIntegrator(ps *ParticleSystem) IntegrationStep {
 	return step
 }
 
-// MakeVelocityVerletIntegrator creates an integrator that performs the
-// following calculation for every particle p that is no fixed.
+// NewVelocityVerletIntegrator creates an integrator that performs the
+// following calculation for every particle p that is not fixed.
 //
 //	a := p.Force.Scale(1.0 / p.Mass)
 //	p.Position.AddAssign(p.Velocity.Scale(1.0 / t))
-//	p.Position.AddAssign(a.Scale(1.0 / (2.0*t*t)))
+//	p.Position.AddAssign(a.Scale(1.0 / (2.0 * t * t)))
 //	p.Velocity.AddAssign(a.Scale(1.0 / t))
-func MakeVelocityVerletIntegrator(ps *ParticleSystem) IntegrationStep {
-	step := func (t float64) float64 {
+func NewVelocityVerletIntegrator(ps *ParticleSystem) IntegrationStep {
+	step := func(t float64) float64 {
 		ps.ApplyForces()
 
 		dt := 1.0 / t

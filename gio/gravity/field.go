@@ -43,10 +43,10 @@ type Field struct {
 	Contours []contourmap.Contour
 }
 
-func MakeField(InitialWidth, InitialHeight, InitialVelocity, Radius float64, Count int) *Field {
+func NewField(InitialWidth, InitialHeight, InitialVelocity, Radius float64, Count int) *Field {
 	s := &Field{}
-	s.ParticleSystem = traer.MakeParticleSystem(traer.DEFAULT_GRAVITY, 0.02)
-	s.Attractor = s.MakeParticle(0.8, InitialWidth/2, InitialHeight/2, 0)
+	s.ParticleSystem = traer.NewParticleSystem(traer.DefaultGravity, 0.02)
+	s.Attractor = s.NewParticle(0.8, InitialWidth/2, InitialHeight/2, 0)
 	s.Attractor.Fixed = true
 	s.AttractorMinDistance = AttractorInitialMinDistance
 	s.AttractorStrength = AttractorInitialStrength
@@ -57,9 +57,9 @@ func MakeField(InitialWidth, InitialHeight, InitialVelocity, Radius float64, Cou
 		randVX := (rand.Float64() - 0.5) * InitialVelocity
 		randVY := (rand.Float64() - 0.5) * InitialVelocity
 		randR := Radius
-		p := s.MakeParticle(0.8, randX, randY, 0)
+		p := s.NewParticle(0.8, randX, randY, 0)
 		p.Velocity = traer.Vec3{X: randVX, Y: randVY}
-		a := s.MakeAttraction(p, s.Attractor, s.AttractorStrength, s.AttractorMinDistance)
+		a := s.NewAttraction(p, s.Attractor, s.AttractorStrength, s.AttractorMinDistance)
 		s.Balls[i] = Ball{P: p, A: a, R: randR}
 	}
 	return s

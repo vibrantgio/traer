@@ -45,7 +45,7 @@ func Gravity() {
 	LightBlue500 := color.NRGBAModel.Convert(colornames.LightBlue500).(color.NRGBA)
 
 	oops := new(op.Ops)
-	field := MakeField(WidthDp, HeightDp, BallVelocity, BallRadius, NumBalls)
+	field := NewField(WidthDp, HeightDp, BallVelocity, BallRadius, NumBalls)
 	fps := traer.FPS{}
 	shaper := text.NewShaper(style.FontFaces())
 	for event := range window.Events() {

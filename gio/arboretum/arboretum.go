@@ -29,14 +29,14 @@ type Arboretum struct {
 }
 
 func NewArboretum() *Arboretum {
-	ps := traer.MakeParticleSystem(0.0, 0.3)
+	ps := traer.NewParticleSystem(0.0, 0.3)
 	ps.Clear()
-	ps.MakeDefaultParticle().Fixed = true
+	ps.NewDefaultParticle().Fixed = true
 	return &Arboretum{ps}
 }
 
 func (ps *Arboretum) AddNode() {
-	p := ps.MakeDefaultParticle()
+	p := ps.NewDefaultParticle()
 	maxParticle := len(ps.Particles) - 1
 	if maxParticle == 0 {
 		return
@@ -49,11 +49,11 @@ func (ps *Arboretum) AddNode() {
 
 	for _, r := range ps.Particles {
 		if p != r {
-			ps.MakeAttraction(p, r, -1000, 20)
+			ps.NewAttraction(p, r, -1000, 20)
 		}
 	}
 
-	ps.MakeSpring(p, q, 0.2, 0.2, 20)
+	ps.NewSpring(p, q, 0.2, 0.2, 20)
 
 	p.Position = traer.Vec3{X: q.Position.X + 2.0*rand.Float64() - 1.0, Y: q.Position.Y + 2.0*rand.Float64() - 1.0, Z: 0}
 }
