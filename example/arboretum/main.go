@@ -16,8 +16,8 @@ import (
 	"gioui.org/text"
 	"gioui.org/unit"
 
-	"github.com/reactivego/gio"
-	"github.com/reactivego/gio/style"
+	"github.com/vibrantgio/style"
+	"github.com/vibrantgio/textdraw"
 	"github.com/vibrantgio/traer"
 
 	"golang.org/x/exp/shiny/materialdesign/colornames"
@@ -83,11 +83,11 @@ func RandomArboretum() {
 			}
 			arboretum.DrawNetwork(rect, metric, gtx.Ops)
 
-			text := gio.Text(shaper, style.H3, 0.0, 0.0, Grey900, "Random Arboretum")
+			text := textdraw.Text(shaper, style.H3, 0.0, 0.0, Grey900, "Random Arboretum")
 			layout.UniformInset(12).Layout(gtx, text)
 			fps.Tick()
 			if activity > 2 {
-				text := gio.Text(shaper, style.H4, 1.0, 1.0, Grey900, fmt.Sprint(fps, "fps"))
+				text := textdraw.Text(shaper, style.H4, 1.0, 1.0, Grey900, fmt.Sprint(fps, "fps"))
 				layout.UniformInset(12).Layout(gtx, text)
 				op.InvalidateOp{}.Add(gtx.Ops)
 			}

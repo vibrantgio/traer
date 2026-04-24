@@ -15,7 +15,7 @@ import (
 	"gioui.org/op/paint"
 	"gioui.org/unit"
 
-	"github.com/reactivego/gio"
+	"github.com/vibrantgio/circle"
 
 	"github.com/vibrantgio/traer"
 )
@@ -151,7 +151,7 @@ func (ps *Arboretum) DrawNetwork(rect image.Rectangle, metric unit.Metric, ops *
 	particle := ps.Particles[0]
 	p := f32.Point{X: float32(particle.Position.X), Y: float32(particle.Position.Y)}
 	var nodesize = dp(5)
-	cstack = clip.Outline{Path: gio.CirclePath(ops, to(p), 3*nodesize*scale)}.Op().Push(ops)
+	cstack = clip.Outline{Path: circle.CirclePath(ops, to(p), 3*nodesize*scale)}.Op().Push(ops)
 	paint.ColorOp{Color: DeepPurple800}.Add(ops)
 	paint.PaintOp{}.Add(ops)
 	cstack.Pop()

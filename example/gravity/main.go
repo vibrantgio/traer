@@ -17,8 +17,9 @@ import (
 	"gioui.org/text"
 	"gioui.org/unit"
 
-	"github.com/reactivego/gio"
-	"github.com/reactivego/gio/style"
+	"github.com/vibrantgio/circle"
+	"github.com/vibrantgio/style"
+	"github.com/vibrantgio/textdraw"
 	"github.com/vibrantgio/traer"
 
 	"golang.org/x/exp/shiny/materialdesign/colornames"
@@ -81,7 +82,7 @@ func Gravity() {
 			}
 			fap := field.Attractor.Position
 			ap := f32.Pt(float32(fap.X), float32(fap.Y))
-			shape = clip.Outline{Path: gio.CirclePath(gtx.Ops, ap, radius)}.Op()
+			shape = clip.Outline{Path: circle.CirclePath(gtx.Ops, ap, radius)}.Op()
 			paint.FillShape(gtx.Ops, color, shape)
 
 			pointer.InputOp{Tag: field, Types: pointer.Press | pointer.Release | pointer.Drag}.Add(gtx.Ops)
@@ -91,10 +92,10 @@ func Gravity() {
 				}
 			}
 
-			layout.UniformInset(12).Layout(gtx, gio.Text(shaper, style.H3, 0.0, 0.0, Grey900, "Gravity Well"))
+			layout.UniformInset(12).Layout(gtx, textdraw.Text(shaper, style.H3, 0.0, 0.0, Grey900, "Gravity Well"))
 			fps.Tick()
 			if activity > 0.01 {
-				layout.UniformInset(12).Layout(gtx, gio.Text(shaper, style.H4, 1.0, 1.0, Grey900, fmt.Sprint(fps, "fps")))
+				layout.UniformInset(12).Layout(gtx, textdraw.Text(shaper, style.H4, 1.0, 1.0, Grey900, fmt.Sprint(fps, "fps")))
 				op.InvalidateOp{}.Add(gtx.Ops)
 			}
 

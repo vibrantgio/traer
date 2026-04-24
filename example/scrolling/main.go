@@ -15,8 +15,8 @@ import (
 	"gioui.org/op/paint"
 	"gioui.org/text"
 	"gioui.org/unit"
-	"github.com/reactivego/gio"
-	"github.com/reactivego/gio/style"
+	"github.com/vibrantgio/style"
+	"github.com/vibrantgio/textdraw"
 	"github.com/vibrantgio/traer"
 	"golang.org/x/exp/shiny/materialdesign/colornames"
 )
@@ -93,11 +93,11 @@ func Scrolling() {
 
 			scroller.Draw(scroller.View, gtx.Ops)
 
-			text := gio.Text(shaper, style.H3, 0.0, 0.0, colornames.Grey900, "Kinetic Scrolling")
+			text := textdraw.Text(shaper, style.H3, 0.0, 0.0, colornames.Grey900, "Kinetic Scrolling")
 			layout.UniformInset(12).Layout(gtx, text)
 			fps.Tick()
 			if activity > SystemMinActivity {
-				text := gio.Text(shaper, style.H4, 1.0, 1.0, colornames.Grey900, fmt.Sprint(fps, "fps"))
+				text := textdraw.Text(shaper, style.H4, 1.0, 1.0, colornames.Grey900, fmt.Sprint(fps, "fps"))
 				layout.UniformInset(12).Layout(gtx, text)
 				op.InvalidateOp{}.Add(gtx.Ops)
 			}

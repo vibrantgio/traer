@@ -19,8 +19,9 @@ import (
 	"gioui.org/text"
 	"gioui.org/unit"
 
-	"github.com/reactivego/gio"
-	"github.com/reactivego/gio/style"
+	"github.com/vibrantgio/circle"
+	"github.com/vibrantgio/style"
+	"github.com/vibrantgio/textdraw"
 
 	"github.com/vibrantgio/traer"
 )
@@ -80,16 +81,16 @@ func Attraction() {
 			}
 
 			pos := f32.Pt(float32(particle.Position.X), float32(particle.Position.Y))
-			cstack := clip.Outline{Path: gio.CirclePath(gtx.Ops, pos, 30)}.Op().Push(gtx.Ops)
+			cstack := clip.Outline{Path: circle.CirclePath(gtx.Ops, pos, 30)}.Op().Push(gtx.Ops)
 			paint.ColorOp{Color: Red400}.Add(gtx.Ops)
 			paint.PaintOp{}.Add(gtx.Ops)
 			cstack.Pop()
 
-			text := gio.Text(shaper, style.H3, 0.0, 0.0, Grey900, "Weak Attraction")
+			text := textdraw.Text(shaper, style.H3, 0.0, 0.0, Grey900, "Weak Attraction")
 			layout.UniformInset(12).Layout(gtx, text)
 			fps.Tick()
 			if activity > 0.1 {
-				text := gio.Text(shaper, style.H4, 1.0, 1.0, Grey900, fmt.Sprint(fps, "fps"))
+				text := textdraw.Text(shaper, style.H4, 1.0, 1.0, Grey900, fmt.Sprint(fps, "fps"))
 				layout.UniformInset(12).Layout(gtx, text)
 				op.InvalidateOp{}.Add(gtx.Ops)
 			}

@@ -12,7 +12,7 @@ import (
 
 	"golang.org/x/exp/shiny/materialdesign/colornames"
 
-	"github.com/reactivego/gio"
+	"github.com/vibrantgio/circle"
 
 	"github.com/vibrantgio/traer"
 )
@@ -193,7 +193,7 @@ func (s *KineticScroller) Draw(rect image.Rectangle, ops *op.Ops) {
 		pt := f32.Pt(float32(particle.Position.X), float32(particle.Position.Y))
 		pt.X += ax * float32(rect.Min.X+rect.Max.X)
 		pt.Y += ay * float32(rect.Min.Y+rect.Max.Y)
-		gio.FillCircle(ops, pt, 10, color)
+		circle.FillCircle(ops, pt, 10, color)
 	}
 	draw(s.PointerParticleH, colornames.Red500, 0.0, 0.5, ops)
 	draw(s.PointerParticleV, colornames.Red500, 0.5, 0.0, ops)
