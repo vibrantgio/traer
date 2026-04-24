@@ -14,9 +14,11 @@ const (
 )
 
 // IntegrationStep is the interface common to all integration algorithms.
-// The return value for the function is a measure of how much speed is still
-// in particles the system.
-type IntegrationStep func(t float64) float64
+// The argument is the inverse of the simulation time step (a larger invDt
+// means a smaller dt and therefore a slower, more accurate simulation).
+// The return value is a measure of how much speed is still in the particles
+// of the system.
+type IntegrationStep func(invDt float64) float64
 
 // ParticleSystem is in charge of everything. It makes particles and forces
 // for you and you tell it to advance the simulation using Tick().
@@ -115,27 +117,28 @@ func (ps *ParticleSystem) NewSpring(a, b *Particle, strength, damping, restLengt
 	return spring
 }
 
-// Tick advances the simulation by a 1/t seconds (t is the argument to Tick).
-// By default use a t of 1.0 indicating a simulation duration of a second for
-// that Tick call. Increase t to a higher value in order to make the
-// simulation run SLOWER, as a higher t will lead to a lower 1/t value forcing
-// the simulation to run smaller time increments for every call to Tick.
+// Tick advances the simulation by 1/invDt seconds. By default use an invDt
+// of 1.0 indicating a simulation duration of a second for that Tick call.
+// Increase invDt to a higher value in order to make the simulation run
+// SLOWER, as a higher invDt will lead to a lower 1/invDt value forcing the
+// simulation to run smaller time increments for every call to Tick.
 //
 // Note that target framerate in TraerAS3 was 31fps and it used Tick(1). We
 // usually get 60fps so we can double the step size and by doing so splitting
 // the step time in half.
-func (ps *ParticleSystem) Tick(t float64) float64 {
-	return ps.Step(t)
+func (ps *ParticleSystem) Tick(invDt float64) float64 {
+	return ps.Step(invDt)
 }
 
 // ApplyForces wil apply gravity, drag, spring and attraction forces to
 // particles
 func (ps *ParticleSystem) ApplyForces() {
+	// Original Traer Physics version 3.0 does not take particle mass into
+	// account for gravity. Only matters for particles with mass different
+	// from the default 1.0 value though.
+	gravityOn := ps.Gravity.LengthSquared() > 0
 	for _, particle := range ps.Particles {
-		if ps.Gravity.Length() > 0.0 {
-			// Original Traer Physics version 3.0 does not take particle mass
-			// into account for gravity. Only matters for particles with mass
-			// different from the default 1.0 value though.
+		if gravityOn {
 			particle.Force = ps.Gravity.Scale(particle.Mass)
 		} else {
 			particle.Force = Vec3{}

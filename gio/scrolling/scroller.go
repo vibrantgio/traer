@@ -99,10 +99,10 @@ func (s *KineticScroller) Pointer(event pointer.Event) {
 }
 
 func (s *KineticScroller) Tick(t float64) float64 {
-	s.SpringH1.TurnOff()
-	s.SpringH2.TurnOff()
-	s.SpringV1.TurnOff()
-	s.SpringV2.TurnOff()
+	s.SpringH1.On = false
+	s.SpringH2.On = false
+	s.SpringV1.On = false
+	s.SpringV2.On = false
 
 	// Handle scroll events with no bouncing. Scroll events are kinetic in their
 	// own right and a fling keeps on generating scroll events after the gesture
@@ -146,7 +146,7 @@ func (s *KineticScroller) Tick(t float64) float64 {
 		} else {
 			contentMinX = float64(ddx) // scrolled too far to the right, so close gap
 		}
-		s.SpringH1.TurnOn()
+		s.SpringH1.On = true
 	}
 
 	sy := 0.0
@@ -160,15 +160,15 @@ func (s *KineticScroller) Tick(t float64) float64 {
 		} else {
 			contentMinY = float64(ddy) // scrolled too far down, close gap
 		}
-		s.SpringV1.TurnOn()
+		s.SpringV1.On = true
 	}
 
 	s.FixedParticleH.Position.X = contentMinX
 	s.FixedParticleV.Position.Y = contentMinY
 
 	if s.IsManipulating {
-		s.SpringH2.TurnOn()
-		s.SpringV2.TurnOn()
+		s.SpringH2.On = true
+		s.SpringV2.On = true
 		d := s.PointerLocation.Subtract(s.PointerStartLocation)
 		s.PointerStartLocation = s.PointerLocation
 		s.PointerParticleH.Position.X += d.X

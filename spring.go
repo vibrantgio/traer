@@ -23,13 +23,3 @@ type Spring struct {
 
 	On bool
 }
-
-// TurnOn is shorthand for setting the On field of the spring to true.
-func (s *Spring) TurnOn() {
-	s.On = true
-}
-
-// TurnOff is shorthand for setting the On field of the spring to false.
-func (s *Spring) TurnOff() {
-	s.On = false
-}

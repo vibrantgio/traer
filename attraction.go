@@ -23,16 +23,6 @@ type Attraction struct {
 	On bool
 }
 
-// TurnOn is shorthand for setting the On field of the attraction to true.
-func (a *Attraction) TurnOn() {
-	a.On = true
-}
-
-// TurnOff is shorthand for setting the On field of the attraction to false.
-func (a *Attraction) TurnOff() {
-	a.On = false
-}
-
 // SetMinimumDistance will square the minimumDistance argument and set the
 // MinimumDistanceSquared field of the attraction.
 func (a *Attraction) SetMinimumDistance(minimumDistance float64) {
