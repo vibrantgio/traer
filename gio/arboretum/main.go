@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"gioui.org/app"
+	"gioui.org/io/event"
 	"gioui.org/io/pointer"
-	"gioui.org/io/system"
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/op/paint"
@@ -40,7 +40,8 @@ func main() {
 }
 
 func RandomArboretum() {
-	window := app.NewWindow(
+	window := new(app.Window)
+	window.Option(
 		app.Title("Traer Physics: Random Arboretum"),
 		app.Size(WidthDp, HeightDp))
 
@@ -50,16 +51,23 @@ func RandomArboretum() {
 	arboretum := NewArboretum()
 	fps := traer.FPS{}
 	oops := new(op.Ops)
-	shaper := text.NewShaper(style.FontFaces())
-	for event := range window.Events() {
-		if frame, ok := event.(system.FrameEvent); ok {
-			gtx := layout.NewContext(oops, frame)
+	shaper := text.NewShaper(text.WithCollection(style.FontFaces()))
+	for {
+		switch e := window.Event().(type) {
+		case app.DestroyEvent:
+			os.Exit(0)
+		case app.FrameEvent:
+			gtx := app.NewContext(oops, e)
 
 			// backdrop
-			pointer.InputOp{Tag: arboretum, Types: pointer.Press}.Add(gtx.Ops)
-			for _, event := range frame.Queue.Events(arboretum) {
-				if point, ok := event.(pointer.Event); ok {
-					if point.Type == pointer.Press {
+			event.Op(gtx.Ops, arboretum)
+			for {
+				ev, ok := gtx.Source.Event(pointer.Filter{Target: arboretum, Kinds: pointer.Press})
+				if !ok {
+					break
+				}
+				if point, ok := ev.(pointer.Event); ok {
+					if point.Kind == pointer.Press {
 						arboretum = NewArboretum()
 					}
 				}
@@ -76,24 +84,23 @@ func RandomArboretum() {
 			// the step time in half.
 			activity := arboretum.Tick(math.Max(1, fps.Value/30))
 
-			rect := image.Rectangle{Max: gtx.Constraints.Constrain(frame.Size)}
+			rect := image.Rectangle{Max: gtx.Constraints.Constrain(e.Size)}
 			metric := gtx.Metric
 			if !AutoScale {
 				metric = unit.Metric{PxPerDp: 1.0, PxPerSp: 1.0}
 			}
 			arboretum.DrawNetwork(rect, metric, gtx.Ops)
 
-			text := textdraw.Text(shaper, style.H3, 0.0, 0.0, Grey900, "Random Arboretum")
-			layout.UniformInset(12).Layout(gtx, text)
+			txt := textdraw.Text(shaper, style.H3, 0.0, 0.0, Grey900, "Random Arboretum")
+			layout.UniformInset(12).Layout(gtx, txt)
 			fps.Tick()
 			if activity > 2 {
-				text := textdraw.Text(shaper, style.H4, 1.0, 1.0, Grey900, fmt.Sprint(fps, "fps"))
-				layout.UniformInset(12).Layout(gtx, text)
-				op.InvalidateOp{}.Add(gtx.Ops)
+				txt := textdraw.Text(shaper, style.H4, 1.0, 1.0, Grey900, fmt.Sprint(fps, "fps"))
+				layout.UniformInset(12).Layout(gtx, txt)
+				gtx.Execute(op.InvalidateCmd{})
 			}
 
-			frame.Frame(gtx.Ops)
+			e.Frame(gtx.Ops)
 		}
 	}
-	os.Exit(0)
 }

@@ -10,8 +10,8 @@ import (
 
 	"gioui.org/app"
 	"gioui.org/f32"
+	"gioui.org/io/event"
 	"gioui.org/io/pointer"
-	"gioui.org/io/system"
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/op/clip"
@@ -35,7 +35,8 @@ func main() {
 }
 
 func Attraction() {
-	window := app.NewWindow(
+	window := new(app.Window)
+	window.Option(
 		app.Title("Traer Physics: Weak Attraction"),
 		app.Size(unit.Dp(WindowWidthDp), unit.Dp((WindowWidthDp*9)/16)),
 	)
@@ -53,13 +54,16 @@ func Attraction() {
 
 	var fps traer.FPS
 	oops := new(op.Ops)
-	shaper := text.NewShaper(style.FontFaces())
-	for event := range window.Events() {
-		if frame, ok := event.(system.FrameEvent); ok {
-			gtx := layout.NewContext(oops, frame)
+	shaper := text.NewShaper(text.WithCollection(style.FontFaces()))
+	for {
+		switch e := window.Event().(type) {
+		case app.DestroyEvent:
+			os.Exit(0)
+		case app.FrameEvent:
+			gtx := app.NewContext(oops, e)
 
 			if anchor == nil {
-				cx, cy := float64(frame.Size.X/2), float64(frame.Size.Y/2)
+				cx, cy := float64(e.Size.X/2), float64(e.Size.Y/2)
 				anchor = partsys.NewParticle(1.0, cx, cy, 0)
 				anchor.Fixed = true
 				particle = partsys.NewParticle(1.0, cx, cy, 0)
@@ -70,11 +74,15 @@ func Attraction() {
 			}
 			activity := partsys.Tick(math.Max(1.2, fps.Value/30))
 
-			anchor.Position = traer.Vec3{X: float64(frame.Size.X / 2), Y: float64(frame.Size.Y / 2)}
+			anchor.Position = traer.Vec3{X: float64(e.Size.X / 2), Y: float64(e.Size.Y / 2)}
 
-			pointer.InputOp{Tag: tag, Types: pointer.Move}.Add(gtx.Ops)
-			for _, event := range frame.Queue.Events(tag) {
-				if move, ok := event.(pointer.Event); ok {
+			event.Op(gtx.Ops, tag)
+			for {
+				ev, ok := gtx.Source.Event(pointer.Filter{Target: tag, Kinds: pointer.Move})
+				if !ok {
+					break
+				}
+				if move, ok := ev.(pointer.Event); ok {
 					position := traer.Vec3{X: float64(move.Position.X), Y: float64(move.Position.Y)}
 					attractor.Position = position
 				}
@@ -86,17 +94,16 @@ func Attraction() {
 			paint.PaintOp{}.Add(gtx.Ops)
 			cstack.Pop()
 
-			text := textdraw.Text(shaper, style.H3, 0.0, 0.0, Grey900, "Weak Attraction")
-			layout.UniformInset(12).Layout(gtx, text)
+			txt := textdraw.Text(shaper, style.H3, 0.0, 0.0, Grey900, "Weak Attraction")
+			layout.UniformInset(12).Layout(gtx, txt)
 			fps.Tick()
 			if activity > 0.1 {
-				text := textdraw.Text(shaper, style.H4, 1.0, 1.0, Grey900, fmt.Sprint(fps, "fps"))
-				layout.UniformInset(12).Layout(gtx, text)
-				op.InvalidateOp{}.Add(gtx.Ops)
+				txt := textdraw.Text(shaper, style.H4, 1.0, 1.0, Grey900, fmt.Sprint(fps, "fps"))
+				layout.UniformInset(12).Layout(gtx, txt)
+				gtx.Execute(op.InvalidateCmd{})
 			}
 
-			frame.Frame(gtx.Ops)
+			e.Frame(gtx.Ops)
 		}
 	}
-	os.Exit(0)
 }

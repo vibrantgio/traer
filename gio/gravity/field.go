@@ -66,7 +66,7 @@ func NewField(InitialWidth, InitialHeight, InitialVelocity, Radius float64, Coun
 }
 
 func (s *Field) Pointer(event pointer.Event) {
-	switch event.Type {
+	switch event.Kind {
 	case pointer.Press, pointer.Drag:
 		px, py := float64(event.Position.X), float64(event.Position.Y)
 		d := math.Hypot(px-s.Attractor.Position.X, py-s.Attractor.Position.Y)

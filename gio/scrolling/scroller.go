@@ -76,7 +76,7 @@ func NewScroller() *KineticScroller {
 }
 
 func (s *KineticScroller) Pointer(event pointer.Event) {
-	switch event.Type {
+	switch event.Kind {
 	case pointer.Press:
 		s.IsManipulating = true
 		px, py := float64(event.Position.X), float64(event.Position.Y)

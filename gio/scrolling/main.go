@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"gioui.org/app"
+	"gioui.org/io/event"
 	"gioui.org/io/pointer"
-	"gioui.org/io/system"
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/op/paint"
@@ -40,7 +40,8 @@ func main() {
 }
 
 func Scrolling() {
-	window := app.NewWindow(
+	window := new(app.Window)
+	window.Option(
 		app.Title("Traer Physics: Kinetic Scrolling"),
 		app.Size(unit.Dp(WindowWidthDp), unit.Dp(WindowHeightDp)),
 	)
@@ -55,32 +56,36 @@ func Scrolling() {
 
 	scroller := NewScroller()
 	scroller.Content = image.Rectangle{Max: unsplash.Bounds().Size()}
-	shaper := text.NewShaper(style.FontFaces())
+	shaper := text.NewShaper(text.WithCollection(style.FontFaces()))
 	fps := traer.FPS{}
-	for event := range window.Events() {
-		if frame, ok := event.(system.FrameEvent); ok {
-			frame.Insets.Top += 12
-			frame.Insets.Bottom += 12
-			frame.Insets.Left += 12
-			frame.Insets.Right += 12
-			gtx := layout.NewContext(oops, frame)
+	for {
+		switch e := window.Event().(type) {
+		case app.DestroyEvent:
+			os.Exit(0)
+		case app.FrameEvent:
+			e.Insets.Top += 12
+			e.Insets.Bottom += 12
+			e.Insets.Left += 12
+			e.Insets.Right += 12
+			gtx := app.NewContext(oops, e)
 
-			pointer.InputOp{Tag: scroller, Types: pointer.Press | pointer.Release | pointer.Drag | pointer.Scroll}.Add(gtx.Ops)
-			for _, e := range frame.Queue.Events(scroller) {
-				if point, ok := e.(pointer.Event); ok {
+			event.Op(gtx.Ops, scroller)
+			for {
+				ev, ok := gtx.Source.Event(pointer.Filter{Target: scroller, Kinds: pointer.Press | pointer.Release | pointer.Drag | pointer.Scroll, ScrollX: pointer.ScrollRange{Min: -1e6, Max: 1e6}, ScrollY: pointer.ScrollRange{Min: -1e6, Max: 1e6}})
+				if !ok {
+					break
+				}
+				if point, ok := ev.(pointer.Event); ok {
 					scroller.Pointer(point)
 				}
 			}
 
-			scroller.View = image.Rectangle{Max: gtx.Constraints.Constrain(frame.Size)}
+			scroller.View = image.Rectangle{Max: gtx.Constraints.Constrain(e.Size)}
 
 			// t values of 1.2 and higher provide a stable physics simulation
 			activity := scroller.Tick(math.Max(1.2, fps.Value/30))
 
 			scrollOffset := image.Pt(scroller.Content.Min.X, scroller.Content.Min.Y)
-			// fmt.Printf("scroll offset   : %+v\n", scrollOffset)
-			// fmt.Printf("scroller view   : %+v\n", scroller.View)
-			// fmt.Printf("scroller content: %+v\n", scroller.Content)
 
 			// Draw image at offset
 			imageOp := paint.NewImageOp(unsplash)
@@ -93,17 +98,16 @@ func Scrolling() {
 
 			scroller.Draw(scroller.View, gtx.Ops)
 
-			text := textdraw.Text(shaper, style.H3, 0.0, 0.0, colornames.Grey900, "Kinetic Scrolling")
-			layout.UniformInset(12).Layout(gtx, text)
+			txt := textdraw.Text(shaper, style.H3, 0.0, 0.0, colornames.Grey900, "Kinetic Scrolling")
+			layout.UniformInset(12).Layout(gtx, txt)
 			fps.Tick()
 			if activity > SystemMinActivity {
-				text := textdraw.Text(shaper, style.H4, 1.0, 1.0, colornames.Grey900, fmt.Sprint(fps, "fps"))
-				layout.UniformInset(12).Layout(gtx, text)
-				op.InvalidateOp{}.Add(gtx.Ops)
+				txt := textdraw.Text(shaper, style.H4, 1.0, 1.0, colornames.Grey900, fmt.Sprint(fps, "fps"))
+				layout.UniformInset(12).Layout(gtx, txt)
+				gtx.Execute(op.InvalidateCmd{})
 			}
 
-			frame.Frame(gtx.Ops)
+			e.Frame(gtx.Ops)
 		}
 	}
-	os.Exit(0)
 }

@@ -8,8 +8,8 @@ import (
 
 	"gioui.org/app"
 	"gioui.org/f32"
+	"gioui.org/io/event"
 	"gioui.org/io/pointer"
-	"gioui.org/io/system"
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/op/clip"
@@ -35,7 +35,8 @@ func Gravity() {
 	const BallVelocity, BallRadius, NumBalls = 50, 8, 60
 	const AutoScale = true
 
-	window := app.NewWindow(
+	window := new(app.Window)
+	window.Option(
 		app.Title("Traer Physics: Gravity Well"),
 		app.Size(WidthDp, HeightDp))
 
@@ -47,10 +48,13 @@ func Gravity() {
 	oops := new(op.Ops)
 	field := NewField(WidthDp, HeightDp, BallVelocity, BallRadius, NumBalls)
 	fps := traer.FPS{}
-	shaper := text.NewShaper(style.FontFaces())
-	for event := range window.Events() {
-		if frame, ok := event.(system.FrameEvent); ok {
-			gtx := layout.NewContext(oops, frame)
+	shaper := text.NewShaper(text.WithCollection(style.FontFaces()))
+	for {
+		switch e := window.Event().(type) {
+		case app.DestroyEvent:
+			os.Exit(0)
+		case app.FrameEvent:
+			gtx := app.NewContext(oops, e)
 
 			// Target framerate in TraerAS3 was 31fps it used Tick(1).
 			// We usually get 60fps so we can double the step size and by doing so splitting
@@ -60,12 +64,12 @@ func Gravity() {
 			// Fill backdrop
 			paint.Fill(gtx.Ops, Grey50)
 
-			metric := frame.Metric
+			metric := e.Metric
 			if !AutoScale {
 				metric = unit.Metric{PxPerDp: 1.0, PxPerSp: 1.0}
 			}
 
-			dx, dy := float64(frame.Size.X), float64(frame.Size.Y)
+			dx, dy := float64(e.Size.X), float64(e.Size.Y)
 			field.Constrain(dx, dy)
 			field.Contour(dx, dy, metric)
 
@@ -85,9 +89,13 @@ func Gravity() {
 			shape = clip.Outline{Path: circle.CirclePath(gtx.Ops, ap, radius)}.Op()
 			paint.FillShape(gtx.Ops, color, shape)
 
-			pointer.InputOp{Tag: field, Types: pointer.Press | pointer.Release | pointer.Drag}.Add(gtx.Ops)
-			for _, e := range frame.Queue.Events(field) {
-				if point, ok := e.(pointer.Event); ok {
+			event.Op(gtx.Ops, field)
+			for {
+				ev, ok := gtx.Source.Event(pointer.Filter{Target: field, Kinds: pointer.Press | pointer.Release | pointer.Drag})
+				if !ok {
+					break
+				}
+				if point, ok := ev.(pointer.Event); ok {
 					field.Pointer(point)
 				}
 			}
@@ -96,11 +104,10 @@ func Gravity() {
 			fps.Tick()
 			if activity > 0.01 {
 				layout.UniformInset(12).Layout(gtx, textdraw.Text(shaper, style.H4, 1.0, 1.0, Grey900, fmt.Sprint(fps, "fps")))
-				op.InvalidateOp{}.Add(gtx.Ops)
+				gtx.Execute(op.InvalidateCmd{})
 			}
 
-			frame.Frame(gtx.Ops)
+			e.Frame(gtx.Ops)
 		}
 	}
-	os.Exit(0)
 }
