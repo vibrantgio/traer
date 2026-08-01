@@ -65,6 +65,16 @@ Runnable Gio examples live under [`gio/`](./gio):
 - `gio/arboretum` — procedurally grown graph with springs
 - `gio/scrolling` — kinetic scrolling built out of springs
 
+## For coding assistants
+
+Read the canonical guide before writing code against this module — the module
+inventory with current tags, the application skeleton, MVU and rx semantics,
+typography, and the pitfalls that are not guessable:
+
+<https://raw.githubusercontent.com/vibrantgio/.github/master/llms.txt>
+
+[`AGENTS.md`](./AGENTS.md) in this repository has the build and test commands.
+
 ## License
 
 Unlicense OR MIT
