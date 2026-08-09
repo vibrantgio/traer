@@ -8,15 +8,19 @@ advances the simulation through a Verlet integrator —
 `NewDefaultVerletIntegrator` or `NewVelocityVerletIntegrator`. Drawing the
 result is the caller's problem.
 
-**Layer.** Outside ADR-001's tier table: a support library the design
-system consumes and never depends on. `pulse/spring` is its one consumer
-inside the design system, and pulse's physical motion rests on it: every
-`Spring` is a two-particle traer system — one fixed anchor at the target,
-one free particle carrying the animated value — and `pulse/springbutton`
-and `pulse/motion` build on that. The root module imports nothing from the
-organization; the `gio` module is four standalone demos with no library
-code in it, and those use the tier-0 leaves `circle`, `style` and
-`textdraw`.
+**Layer.** Outside ADR-001's tier table: a support library, which the rule
+binds in one direction only — every tier may import it, and it may import
+nothing in the table itself. pulse's physical motion rests on it: every
+`pulse/spring` Spring is a two-particle traer system — one fixed anchor at
+the target, one free particle carrying the animated value — and
+`pulse/springbutton` and `pulse/motion` build on that. Its root module
+imports nothing else in the organization. Its nested `traer/gio` module
+adds `circle`, `font`, `style` and `textdraw` — those edges are the nested
+module's and not the root's. Imported by `pulse`. Outside the tier table,
+also by the demo module `prism/gallery`. Both directions are measured
+rather than typed — `scripts/check-layers.sh --edges` reports the graph and
+`scripts/sync-agents.sh` renders these sentences from it — so correcting
+them here changes nothing.
 
 **Read the canonical guide before you write code against this module.** It is
 the organization's one agent guide — the module inventory with current tags,
