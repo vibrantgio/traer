@@ -16,9 +16,8 @@ at the target, one free particle carrying the animated value — and
 `effects/springbutton` and `effects/motion` build on that. Its root module
 imports nothing else in the organization. Its nested `traer/gio` module
 adds `circle`, `font`, `style` and `textdraw` — those edges are the nested
-module's and not the root's. Imported by `effects`. Outside the tier table,
-also by the demo module `components/gallery`. Both directions are measured
-rather than typed — `scripts/check-layers.sh --edges` reports the graph and
+module's and not the root's. Both directions are measured rather than typed
+— `scripts/check-layers.sh --edges` reports the graph and
 `scripts/sync-agents.sh` renders these sentences from it — so correcting
 them here changes nothing.
 
