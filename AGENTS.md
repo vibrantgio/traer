@@ -10,13 +10,13 @@ result is the caller's problem.
 
 **Layer.** Outside ADR-001's tier table: a support library, which the rule
 binds in one direction only — every tier may import it, and it may import
-nothing in the table itself. pulse's physical motion rests on it: every
-`pulse/spring` Spring is a two-particle traer system — one fixed anchor at
-the target, one free particle carrying the animated value — and
-`pulse/springbutton` and `pulse/motion` build on that. Its root module
+nothing in the table itself. effects' physical motion rests on it: every
+`effects/spring` Spring is a two-particle traer system — one fixed anchor
+at the target, one free particle carrying the animated value — and
+`effects/springbutton` and `effects/motion` build on that. Its root module
 imports nothing else in the organization. Its nested `traer/gio` module
 adds `circle`, `font`, `style` and `textdraw` — those edges are the nested
-module's and not the root's. Imported by `pulse`. Outside the tier table,
+module's and not the root's. Imported by `effects`. Outside the tier table,
 also by the demo module `components/gallery`. Both directions are measured
 rather than typed — `scripts/check-layers.sh --edges` reports the graph and
 `scripts/sync-agents.sh` renders these sentences from it — so correcting
