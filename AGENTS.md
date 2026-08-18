@@ -10,16 +10,18 @@ result is the caller's problem.
 
 **Layer.** Outside ADR-001's tier table: a support library, which the rule
 binds in one direction only — every tier may import it, and it may import
-nothing in the table itself. effects' physical motion rests on it: every
-`effects/spring` Spring is a two-particle traer system — one fixed anchor
-at the target, one free particle carrying the animated value — and
-`effects/springbutton` and `effects/motion` build on that. Its root module
-imports nothing else in the organization. Its nested `traer/gio` module
-adds `circle`, `font`, `style` and `textdraw` — those edges are the nested
-module's and not the root's. Both directions are measured rather than typed
-— `scripts/check-layers.sh --edges` reports the graph and
+nothing in the table itself. It is a particle-system library: a system
+integrates particles under springs, attractions and drag, and everything it
+exports is in service of that one loop. Its root module imports nothing
+else in the organization. Its nested `traer/gio` module adds `circle`,
+`font`, `style` and `textdraw` — those edges are the nested module's and
+not the root's. That direction is measured rather than typed —
+`scripts/check-layers.sh --edges` reports the graph and
 `scripts/sync-agents.sh` renders these sentences from it — so correcting
-them here changes nothing.
+them here changes nothing. The other direction is measured too and
+deliberately not written down: the gate checks the graph both ways, but a
+public API's consumers are unknowable, so this file says what its module
+needs and never who needs it.
 
 **Read the canonical guide before you write code against this module.** It is
 the organization's one agent guide — the module inventory with current tags,
