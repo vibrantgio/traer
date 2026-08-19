@@ -98,12 +98,13 @@ func (ps *ParticleSystem) NewAttraction(a, b *Particle, strength, minimumDistanc
 
 // NewSpring makes a spring in the system between 2 particles you have
 // previously created.
-//  strength -  A strong spring acts like a stick. A weak one takes a
-//    long time to return to its rest length.
-//  damping - A spring with high damping doesn't overshoot and settles
-//     down quickly, while a low damping spring oscillates.
-//  restLength - A spring wants to be at this length and acts on the
-//      particles to push or pull them exactly this far apart at all times.
+//
+//	strength -  A strong spring acts like a stick. A weak one takes a
+//	  long time to return to its rest length.
+//	damping - A spring with high damping doesn't overshoot and settles
+//	   down quickly, while a low damping spring oscillates.
+//	restLength - A spring wants to be at this length and acts on the
+//	    particles to push or pull them exactly this far apart at all times.
 func (ps *ParticleSystem) NewSpring(a, b *Particle, strength, damping, restLength float64) *Spring {
 	spring := &Spring{
 		A:          a,
