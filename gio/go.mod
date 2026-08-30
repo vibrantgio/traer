@@ -8,7 +8,7 @@ require (
 	github.com/vibrantgio/circle v0.0.4
 	github.com/vibrantgio/style v0.0.5
 	github.com/vibrantgio/textdraw v0.0.4
-	github.com/vibrantgio/traer v0.0.8
+	github.com/vibrantgio/traer v0.0.9
 	golang.org/x/exp/shiny v0.0.0-20260727155853-b88d891fe743
 )
 
