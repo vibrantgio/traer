@@ -41,7 +41,6 @@ func Attraction() {
 		app.Size(unit.Dp(WindowWidthDp), unit.Dp((WindowWidthDp*9)/16)),
 	)
 
-	// Grey100 := color.NRGBAModel.Convert(colornames.Grey100).(color.NRGBA)
 	Grey900 := color.NRGBAModel.Convert(colornames.Grey900).(color.NRGBA)
 	Red400 := color.NRGBAModel.Convert(colornames.Red400).(color.NRGBA)
 

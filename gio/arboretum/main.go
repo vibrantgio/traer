@@ -59,7 +59,6 @@ func RandomArboretum() {
 		case app.FrameEvent:
 			gtx := app.NewContext(oops, e)
 
-			// backdrop
 			event.Op(gtx.Ops, arboretum)
 			for {
 				ev, ok := gtx.Source.Event(pointer.Filter{Target: arboretum, Kinds: pointer.Press})

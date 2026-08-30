@@ -19,11 +19,6 @@ const AttractorInitialStrength = 10000.0
 const AttractorInitialMinDistance = 30.0
 const AttractorStrengthFactor = 60.0
 
-// iPhone
-// const AttractorInitialStrength = 50.0
-// const AttractorInitialMinDistance = 15.0
-// const AttractorStrengthFactor = 30.0
-
 const ContouringScale = 1.0 / 7.0
 
 type Ball struct {
@@ -123,7 +118,6 @@ func (s *Field) Contour(Width, Height float64, metric unit.Metric) {
 			pointCount++
 		}
 	}
-	// log.Printf("Contour resolution:w%dxh%d, points:%d\n", w, h, pointCount)
 }
 
 func (s *Field) Render(ops *op.Ops) clip.PathSpec {

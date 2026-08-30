@@ -105,7 +105,6 @@ func (ps *Arboretum) DrawNetwork(rect image.Rectangle, metric unit.Metric, ops *
 		return relativePoint
 	}
 
-	// render edges
 	path := &clip.Path{}
 	path.Begin(ops)
 	for _, spring := range ps.Springs {
@@ -128,7 +127,6 @@ func (ps *Arboretum) DrawNetwork(rect image.Rectangle, metric unit.Metric, ops *
 	paint.PaintOp{}.Add(ops)
 	cstack.Pop()
 
-	// render nodes
 	pen = f32.Point{X: 0, Y: 0}
 	path.Begin(ops)
 	for _, particle := range ps.Particles[1:] {
@@ -146,7 +144,6 @@ func (ps *Arboretum) DrawNetwork(rect image.Rectangle, metric unit.Metric, ops *
 	paint.PaintOp{}.Add(ops)
 	cstack.Pop()
 
-	// render root node
 	pen = f32.Point{X: 0, Y: 0}
 	particle := ps.Particles[0]
 	p := f32.Point{X: float32(particle.Position.X), Y: float32(particle.Position.Y)}

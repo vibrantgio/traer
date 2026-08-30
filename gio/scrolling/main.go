@@ -22,8 +22,8 @@ import (
 )
 
 const (
-	WindowWidthDp  = 1800 // 640
-	WindowHeightDp = 800  // 480
+	WindowWidthDp  = 1800
+	WindowHeightDp = 800
 
 	SystemAcceleration    = 0.0
 	SystemDrag            = 0.1
@@ -87,9 +87,7 @@ func Scrolling() {
 
 			scrollOffset := image.Pt(scroller.Content.Min.X, scroller.Content.Min.Y)
 
-			// Draw image at offset
 			imageOp := paint.NewImageOp(unsplash)
-			// imageOp.Filter = paint.FilterNearest
 
 			stack := op.Offset(scrollOffset).Push(gtx.Ops)
 			imageOp.Add(gtx.Ops)

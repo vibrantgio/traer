@@ -61,7 +61,6 @@ func Gravity() {
 			// the step time in half.
 			activity := field.Tick(math.Max(1, fps.Value/30))
 
-			// Fill backdrop
 			paint.Fill(gtx.Ops, Grey50)
 
 			metric := e.Metric
@@ -73,11 +72,9 @@ func Gravity() {
 			field.Constrain(dx, dy)
 			field.Contour(dx, dy, metric)
 
-			// Render contours
 			shape := clip.Outline{Path: field.Render(gtx.Ops)}.Op()
 			paint.FillShape(gtx.Ops, LightBlue500, shape)
 
-			// Render attractor
 			radius := float32(metric.Dp(20))
 			color := Grey900
 			if field.AttractorStrength < 0 {
